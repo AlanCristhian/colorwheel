@@ -4,42 +4,27 @@ from colormath.color_conversions import convert_color
 from math import radians, cos, sin
 
 
-def fix_values(r, g, b):
-    if r > 255: r = 255
-    if r < 0:   r = 0
-    if g > 255: g = 255
-    if g < 0:   g = 0
-    if b > 255: b = 255
-    if b < 0:   b = 0
-    return r, g, b
-
-
 def lchab(l, c, h):
-    value = convert_color(LCHabColor(l, c, h), sRGBColor)
-    return value.get_upscaled_value_tuple()
+    return convert_color(LCHabColor(l, c, h), sRGBColor)
 
 
 def lchuv(l, c, h):
-    value = convert_color(LCHuvColor(l, c, h), sRGBColor)
-    return value.get_upscaled_value_tuple()
+    return convert_color(LCHuvColor(l, c, h), sRGBColor)
 
 
 def hsl(l, c, h):
-    value = convert_color(HSLColor(h, c/100, l/100), sRGBColor)
-    return value.get_upscaled_value_tuple()
+    return convert_color(HSLColor(h, c/100, l/100), sRGBColor)
 
 
 def hsv(l, c, h):
-    value = convert_color(HSVColor(h, c/100, l/100), sRGBColor)
-    return value.get_upscaled_value_tuple()
+    return convert_color(HSVColor(h, c/100, l/100), sRGBColor)
 
 
 def ipt(l, c, h):
     i = l/100
     p = c/100*cos(radians(h))
     t = c/100*sin(radians(h))
-    value = convert_color(IPTColor(i, p, t), sRGBColor)
-    return value.get_upscaled_value_tuple()
+    return convert_color(IPTColor(i, p, t), sRGBColor)
 
 
 def create_system(space):
@@ -48,7 +33,8 @@ def create_system(space):
         l = luminosity
         k = 360/amount
         ans = (space(l, c, start + i*k) for i in range(amount))
-        ans = (fix_values(r, g, b) for r, g, b in ans)
+        ans = ((v.clamped_rgb_r, v.clamped_rgb_g,v.clamped_rgb_b) for v in ans)
+        ans = ((round(r*255), round(g*255), round(b*255)) for r, g, b in ans)
         ans = (("#%02x%02x%02x" % (r, g, b), r, g, b) for r, g, b in ans)
         return ans
     return hex_colors
