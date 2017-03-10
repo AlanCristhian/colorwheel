@@ -14,10 +14,14 @@ class BaseSuite(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
+        cls.app.destroy()
+        del cls.app
+        cls.root.update_idletasks()
         cls.root.destroy()
         del cls.root
 
-class MainWidgetsSuite:
+
+class MainWidgetsSuite(BaseSuite):
     def test_main_application_instance(self):
         self.assertIsInstance(self.app, main.App)
 
@@ -25,7 +29,7 @@ class MainWidgetsSuite:
         self.assertTrue(self.app.winfo_manager())
 
 
-class ToolbarSuite:
+class ToolbarSuite(BaseSuite):
     def test_toolbar_property(self):
         self.assertIsInstance(self.app.toolbar, tkinter.Frame)
 
@@ -57,35 +61,105 @@ class ToolbarSuite:
         self.assertTrue(self.app.redo_button.winfo_manager())
 
 
-class GlobalEventsSuite:
+class GlobalEventsSuite(BaseSuite):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        for tab_id in cls.app.notebook.tabs():
+            index = cls.app.notebook.index(tab_id)
+            cls.app.notebook.forget(index)
+
+    def setUp(self):
+        self.app.new_wheel()
+
+    def tearDown(self):
+        for tab_id in self.app.notebook.tabs():
+            index = self.app.notebook.index(tab_id)
+            self.app.notebook.forget(index)
+
     def test_new_event(self):
         self.app.event_generate("<Control-n>")
-        self.assertTrue(self.app.notebook.tabs())
+        self.assertEqual(len(self.app.notebook.tabs()), 2)
 
-    def test_open_event(self):
-        self.app.event_generate("<Control-o>")
+    def test_undo_event_with_one_element(self):
+        wheel, tab_id = self.app.get_wheel_and_tab_id()
+        self.app.event_generate("<Control-Key-z>")
+        self.assertEqual(wheel.settings.number, 360)
 
-    def test_save_event(self):
-        self.app.event_generate("<Control-s>")
-
-    def test_save_as_event(self):
-        self.app.event_generate("<Control-Shift-Key-S>")
-
-    def test_undo_event(self):
-        self.app.event_generate("<Control-z>")
-
-    def test_redo_event(self):
+    def test_redo_event_with_one_element(self):
+        wheel, tab_id = self.app.get_wheel_and_tab_id()
         self.app.event_generate("<Control-Shift-Key-Z>")
+        self.assertEqual(wheel.settings.number, 360)
 
+    def test_undo_with_cursor_at_end(self):
+        wheel, tab_id = self.app.get_wheel_and_tab_id()
+        wheel.settings.number = 2
+        wheel.draw_wheel()
+        wheel.settings.number = 3
+        wheel.draw_wheel()
+        self.app.event_generate("<Control-Key-z>")
+        self.assertEqual(wheel.settings.number, 2)
+        self.app.event_generate("<Control-Shift-Key-Z>")
+        self.assertEqual(wheel.settings.number, 3)
 
+    def test_redo_with_cursor_at_end(self):
+        wheel, tab_id = self.app.get_wheel_and_tab_id()
+        wheel.settings.number = 2
+        wheel.draw_wheel()
+        wheel.settings.number = 3
+        wheel.draw_wheel()
+        self.app.event_generate("<Control-Shift-Key-Z>")
+        self.assertEqual(wheel.settings.number, 3)
 
-class AllSuites(BaseSuite, MainWidgetsSuite, ToolbarSuite, GlobalEventsSuite):
-    pass
+    def test_undo_with_cursor_at_middle(self):
+        wheel, tab_id = self.app.get_wheel_and_tab_id()
+        wheel.settings.number = 2
+        wheel.draw_wheel()
+        wheel.settings.number = 3
+        wheel.draw_wheel()
+        wheel.settings.number = 4
+        wheel.draw_wheel()
+        self.app.event_generate("<Control-Key-z>")
+        self.app.event_generate("<Control-Key-z>")
+        self.assertEqual(wheel.settings.number, 2)
+        self.app.event_generate("<Control-Shift-Key-Z>")
+        self.assertEqual(wheel.settings.number, 3)
+
+    def test_redo_with_cursor_at_middle(self):
+        wheel, tab_id = self.app.get_wheel_and_tab_id()
+        wheel.settings.number = 2
+        wheel.draw_wheel()
+        wheel.settings.number = 3
+        wheel.draw_wheel()
+        wheel.settings.number = 4
+        wheel.draw_wheel()
+        self.app.event_generate("<Control-Key-z>")
+        self.app.event_generate("<Control-Key-z>")
+        self.app.event_generate("<Control-Shift-Key-Z>")
+        self.assertEqual(wheel.settings.number, 3)
+        self.app.event_generate("<Control-Key-z>")
+        self.assertEqual(wheel.settings.number, 2)
+
+    def test_append_after_redo(self):
+        wheel, tab_id = self.app.get_wheel_and_tab_id()
+        wheel.settings.number = 2
+        wheel.draw_wheel()
+        wheel.settings.number = 3
+        wheel.draw_wheel()
+        wheel.settings.number = 4
+        wheel.draw_wheel()
+        self.app.event_generate("<Control-Key-z>")
+        self.app.event_generate("<Control-Key-z>")
+        wheel.settings.number = 5
+        wheel.draw_wheel()
+        self.assertEqual(wheel.settings.number, 5)
+        self.app.event_generate("<Control-Key-z>")
+        self.assertEqual(wheel.settings.number, 2)
+
 
 
 # atexti
 # config
-# treeview
 
 if __name__ == '__main__':
     unittest.main()

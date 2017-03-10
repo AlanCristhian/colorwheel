@@ -30,7 +30,7 @@ def save_config():
         SETTINGS.write(settings_file)
 
 
-class AppWidgets(tkinter.Frame):
+class App(tkinter.Frame):
     def __init__(self, root):
         super().__init__(root)
         self.root = root
@@ -47,23 +47,28 @@ class AppWidgets(tkinter.Frame):
         self.new_button.grid(row=0, column=0)
 
         self.open_button = tkinter.Button(
-            self.toolbar, text="abrir", highlightthickness=0)
+            self.toolbar, text="abrir", highlightthickness=0,
+            command=self.open_wheel)
         self.open_button.grid(row=0, column=1)
 
         self.save_button = tkinter.Button(
-            self.toolbar, text="guardar", highlightthickness=0)
+            self.toolbar, text="guardar", highlightthickness=0,
+            command=self.save_changes)
         self.save_button.grid(row=0, column=2)
 
         self.save_as_button = tkinter.Button(
-            self.toolbar, text="guardar como", highlightthickness=0)
+            self.toolbar, text="guardar como", highlightthickness=0,
+            command=self.save_wheel)
         self.save_as_button.grid(row=0, column=3)
 
         self.undo_button = tkinter.Button(
-            self.toolbar, text="deshacer", highlightthickness=0)
+            self.toolbar, text="deshacer", highlightthickness=0,
+            command=self.undo)
         self.undo_button.grid(row=0, column=4)
 
         self.redo_button = tkinter.Button(
-            self.toolbar, text="rehacer", highlightthickness=0)
+            self.toolbar, text="rehacer", highlightthickness=0,
+            command=self.redo)
         self.redo_button.grid(row=0, column=5)
 
         # create an inner frame to center the widgets
@@ -78,6 +83,7 @@ class AppWidgets(tkinter.Frame):
         name = "untitled-%r" % counter() if name is None else name
         frame = tkinter.Frame(self.notebook)
         wheel = file.File(frame)
+        wheel.grid(padx=0, pady=0, row=0, column=0)
         self.notebook.add(frame, text=name)
         # set the focus in the new tab
         self.notebook.select(frame)
@@ -102,13 +108,13 @@ class AppWidgets(tkinter.Frame):
             with open(wheel.file_path, "w") as wheel_file:
                 wheel_file.write(
                     f"[wheel]\n"
-                    f"number = {wheel.number_var.get()}\n"
-                    f"start = {wheel.start_var.get()}\n"
-                    f"saturation = {wheel.saturation_var.get()}\n"
-                    f"luminosity = {wheel.luminosity_var.get()}\n"
-                    f"background = {wheel.background_var.get()}\n"
-                    f"color_space = {wheel.color_space_var.get()}\n"
-                    f"outline = {wheel.outline_var.get()}")
+                    f"number = {wheel.settings.number}\n"
+                    f"start = {wheel.settings.start}\n"
+                    f"saturation = {wheel.settings.saturation}\n"
+                    f"luminosity = {wheel.settings.luminosity}\n"
+                    f"background = {wheel.view.background}\n"
+                    f"outline = {wheel.view.outline}\n"
+                    f"color_space = {wheel.color_space.space}")
         else:
             self.save_wheel(wheel=wheel, tab_id=tab_id)
 
@@ -125,13 +131,13 @@ class AppWidgets(tkinter.Frame):
         if dialog is not None:
             dialog.write(
                 f"[wheel]\n"
-                f"number = {wheel.number_var.get()}\n"
-                f"start = {wheel.start_var.get()}\n"
-                f"saturation = {wheel.saturation_var.get()}\n"
-                f"luminosity = {wheel.luminosity_var.get()}\n"
-                f"background = {wheel.background_var.get()}\n"
-                f"color_space = {wheel.color_space_var.get()}\n"
-                f"outline = {wheel.outline_var.get()}")
+                f"number = {wheel.settings.number}\n"
+                f"start = {wheel.settings.start}\n"
+                f"saturation = {wheel.settings.saturation}\n"
+                f"luminosity = {wheel.settings.luminosity}\n"
+                f"background = {wheel.view.background}\n"
+                f"outline = {wheel.view.outline}\n"
+                f"color_space = {wheel.color_space.space}")
 
             wheel_path = pathlib.Path(dialog.name)
             self.current_directory = str(wheel_path.parent)
@@ -157,25 +163,55 @@ class AppWidgets(tkinter.Frame):
             wheel = self.new_wheel(name=text)
             wheel.file_path = dialog.name
             dialog.close()
-            wheel.number_var.set(settings["wheel"]["number"])
-            wheel.start_var.set(settings["wheel"]["start"])
-            wheel.saturation_var.set(settings["wheel"]["saturation"])
-            wheel.luminosity_var.set(settings["wheel"]["luminosity"])
-            wheel.background_var.set(settings["wheel"]["background"])
-            wheel.outline_var.set(settings["wheel"]["outline"])
-            wheel.color_space_var.set(settings["wheel"]["color_space"])
+
+            wheel.settings.number = settings["wheel"]["number"]
+            wheel.settings.start = settings["wheel"]["start"]
+            wheel.settings.saturation = settings["wheel"]["saturation"]
+            wheel.settings.luminosity = settings["wheel"]["luminosity"]
+            wheel.view.background = settings["wheel"]["background"]
+            wheel.view.outline = settings["wheel"]["outline"]
+            wheel.color_space.space = settings["wheel"]["color_space"]
+
             wheel.draw_wheel()
 
+    def undo(self, event=None):
+        wheel, tab_id = self.get_wheel_and_tab_id()
+        wheel.history.prev()
+        data = wheel.history[wheel.history.cursor]
+        wheel.settings.number = data.number
+        wheel.settings.start = data.start
+        wheel.settings.saturation = data.saturation
+        wheel.settings.luminosity = data.luminosity
+        wheel.view.background = data.background
+        wheel.view.outline = data.outline
+        wheel.color_space.space = data.color_space
+        wheel.update_history = False
+        wheel.draw_wheel()
+        wheel.update_history = True
+
+    def redo(self, event=None):
+        wheel, tab_id = self.get_wheel_and_tab_id()
+        wheel.history.next()
+        data = wheel.history[wheel.history.cursor]
+        wheel.settings.number = data.number
+        wheel.settings.start = data.start
+        wheel.settings.saturation = data.saturation
+        wheel.settings.luminosity = data.luminosity
+        wheel.view.background = data.background
+        wheel.view.outline = data.outline
+        wheel.color_space.space = data.color_space
+        wheel.update_history = False
+        wheel.draw_wheel()
+        wheel.update_history = True
 
     def set_events(self):
         self.root.bind("<Control-o>", self.open_wheel)
         self.root.bind("<Control-n>", self.new_wheel)
         self.root.bind("<Control-s>", self.save_changes)
         self.root.bind("<Control-Shift-Key-S>", self.save_wheel)
-
-
-class App(AppWidgets):
-    pass
+        self.root.bind("<Control-Key-z>", self.undo)
+        self.root.bind("<Control-Shift-Key-Z>", self.redo)
+        self.root.bind("<Control-Key-y>", self.redo)
 
 
 if __name__ == '__main__':
