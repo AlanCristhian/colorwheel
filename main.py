@@ -26,7 +26,12 @@ else:
 
 def wheel_name(text):
     name = pathlib.Path(text)
-    return str(pathlib.Path()/name.parent.parts[-1]/name.name)
+    parts = name.parent.parts
+    if parts:
+        return str(pathlib.Path()/name.parts[-1]/name.name)
+    else:
+
+        return "untitled-%s" % counter()
 
 
 class App(tkinter.Frame):
