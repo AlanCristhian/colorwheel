@@ -157,9 +157,5 @@ class GlobalEventsSuite(BaseSuite):
         self.assertEqual(wheel.settings.number, 2)
 
 
-
-# atexti
-# config
-
 if __name__ == '__main__':
     unittest.main()

@@ -3,7 +3,6 @@ from tkinter import ttk
 from tkinter import filedialog
 import pathlib
 import configparser
-import atexit
 import itertools
 
 import widgets
@@ -21,13 +20,13 @@ if (BASE/".config").exists():
 else:
     SETTINGS["default"] = {
         "current_directory": str(BASE.home()),
+        "opened_files": [],
     }
 
 
-@atexit.register
-def save_config():
-    with open(BASE/".config", "w") as settings_file:
-        SETTINGS.write(settings_file)
+def wheel_name(text):
+    name = pathlib.Path(text)
+    return str(pathlib.Path()/name.parent.parts[-1]/name.name)
 
 
 class App(tkinter.Frame):
@@ -77,14 +76,21 @@ class App(tkinter.Frame):
         self.notebook.grid(row=1, column=0, sticky=tkinter.W)
 
         self.set_events()
-        self.new_wheel()
+        if SETTINGS["default"]["opened_files"]:
+            for i in SETTINGS["default"]["opened_files"].split(","):
+                self.open_wheel(path=i)
+        else:
+            self.new_wheel()
 
     def new_wheel(self, event=None, name=None):
-        name = "untitled-%r" % counter() if name is None else name
+        tab_name = "untitled-%r" % counter() if name is None \
+                   else wheel_name(name)
         frame = tkinter.Frame(self.notebook)
         wheel = file.File(frame)
         wheel.grid(padx=0, pady=0, row=0, column=0)
-        self.notebook.add(frame, text=name)
+        if name:
+            wheel.file_path = str(name)
+        self.notebook.add(frame, text=tab_name)
         # set the focus in the new tab
         self.notebook.select(frame)
         return wheel
@@ -149,21 +155,25 @@ class App(tkinter.Frame):
                        wheel_path.name
             self.notebook.tab(str(tab_id), text=str(new_text))
 
-    def open_wheel(self, event=None):
-        dialog = filedialog.askopenfile(
-            mode="r",
-            defaultextension=".wheel",
-            initialdir=self.current_directory,
-            filetypes=[("color wheel", ".wheel")])
-        if dialog is not None:
+    def open_wheel(self, event=None, path=None):
+        if path:
             settings = configparser.ConfigParser()
-            settings.read(dialog.name)
-            name = pathlib.Path(dialog.name)
-            text = pathlib.Path()/name.parent.parts[-1]/name.name
-            wheel = self.new_wheel(name=text)
-            wheel.file_path = dialog.name
-            dialog.close()
-
+            settings.read(path)
+            wheel = self.new_wheel(name=path)
+        else:
+            dialog = filedialog.askopenfile(
+                mode="r",
+                defaultextension=".wheel",
+                initialdir=self.current_directory,
+                filetypes=[("color wheel", ".wheel")])
+            if dialog is not None:
+                settings = configparser.ConfigParser()
+                settings.read(dialog.name)
+                text = wheel_name(dialog.name)
+                wheel = self.new_wheel(name=text)
+                wheel.file_path = dialog.name
+                dialog.close()
+        if "wheel" in settings:
             wheel.settings.number = settings["wheel"]["number"]
             wheel.settings.start = settings["wheel"]["start"]
             wheel.settings.saturation = settings["wheel"]["saturation"]
@@ -171,7 +181,6 @@ class App(tkinter.Frame):
             wheel.view.background = settings["wheel"]["background"]
             wheel.view.outline = settings["wheel"]["outline"]
             wheel.color_space.space = settings["wheel"]["color_space"]
-
             wheel.draw_wheel()
 
     def undo(self, event=None):
@@ -204,6 +213,21 @@ class App(tkinter.Frame):
         wheel.draw_wheel()
         wheel.update_history = True
 
+    def save_config(self):
+        opened = []
+        for index in self.notebook.tabs():
+            key = index.split(".")[2]
+            frame = self.notebook.children[key]
+            wheel = frame.winfo_children()[0]
+            if wheel.file_path:
+                opened.append(wheel.file_path)
+
+        SETTINGS["default"]["opened_files"] = ",".join(opened)
+
+        with open(BASE/".config", "w") as settings_file:
+            SETTINGS.write(settings_file)
+        self.root.destroy()
+
     def set_events(self):
         self.root.bind("<Control-o>", self.open_wheel)
         self.root.bind("<Control-n>", self.new_wheel)
@@ -212,6 +236,7 @@ class App(tkinter.Frame):
         self.root.bind("<Control-Key-z>", self.undo)
         self.root.bind("<Control-Shift-Key-Z>", self.redo)
         self.root.bind("<Control-Key-y>", self.redo)
+        self.root.protocol("WM_DELETE_WINDOW", self.save_config)
 
 
 if __name__ == '__main__':
