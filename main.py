@@ -25,12 +25,11 @@ else:
 
 
 def wheel_name(text):
-    name = pathlib.Path(text)
+    name = pathlib.Path(text).resolve()
     parts = name.parent.parts
     if parts:
-        return str(pathlib.Path()/name.parts[-1]/name.name)
+        return str(pathlib.Path()/parts[-1]/name.name)
     else:
-
         return "untitled-%s" % counter()
 
 
