@@ -89,5 +89,5 @@ ENV/
 .ropeproject
 
 #custom
-.config
-.diff
+*.config
+*.diff
