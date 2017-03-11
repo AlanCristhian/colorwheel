@@ -48,6 +48,13 @@ RADIOBUTTON_GRID = {
 VOID = [""]
 NORTH_SOUTH = tkinter.N + tkinter.S
 
+class SelectAfterReturn:
+    def select_changed_value(self):
+        widget = self.root.focus_get()
+        if isinstance(widget, tkinter.Entry):
+           index = len(widget.get())
+           widget.select_range(0, index)
+
 
 class SettingsFrame(tkinter.LabelFrame):
     def __init__(self, master, text):
@@ -141,14 +148,17 @@ class ViewFrame(tkinter.LabelFrame):
         # outline
         self.outline_var = tkinter.IntVar(self)
         self.outline_checkbutton = tkinter.Checkbutton(
-            self, text=" Dibujar contorno",
+            self, text=" Contorno",
             variable=self.outline_var, command=command)
 
     def grid(self, *args, **kwargs):
         super().grid(*args, **kwargs)
-        self.background_label.grid(row=0, column=0, **GRID_DIMENSIONS)
-        self.background_entry.grid(row=0, column=1, **ENTRY_DIMENSIONS)
-        self.outline_checkbutton.grid(row=0, column=2, **GRID_DIMENSIONS)
+        self.background_label.grid(row=0, column=0, pady=(15, 0),
+                                   **GRID_DIMENSIONS)
+        self.background_entry.grid(row=0, column=1, pady=(15, 0),
+                                    **ENTRY_DIMENSIONS)
+        self.outline_checkbutton.grid(row=0, column=2, pady=(15, 0),
+                                    **GRID_DIMENSIONS)
 
     @property
     def background(self): return self.background_var.get()
@@ -202,24 +212,24 @@ class DataFrame(tkinter.Frame):
         super().__init__(master)
 
         self.color_treeview = ttk.Treeview(
-            self, columns=["Color"], show="headings")
+            self, columns=["Color"], show="headings", height=8)
         self.hexrgb_treeview = ttk.Treeview(
-            self, columns=["Hex RGB"], show="headings")
+            self, columns=["Hex RGB"], show="headings", height=8)
         self.hexrgba_treeview = ttk.Treeview(
-            self, columns=["Hex RGBA"], show="headings")
+            self, columns=["Hex RGBA"], show="headings", height=8)
         self.r_treeview = ttk.Treeview(
-            self, columns=["R"], show="headings")
+            self, columns=["R"], show="headings", height=8)
         self.g_treeview = ttk.Treeview(
-            self, columns=["G"], show="headings")
+            self, columns=["G"], show="headings", height=8)
         self.b_treeview = ttk.Treeview(
-            self, columns=["B"], show="headings")
+            self, columns=["B"], show="headings", height=8)
 
         measure = font.Font(master).measure
 
-        M1 = measure(" Color ")
-        M2 = measure(" Hex RGB ")
-        M3 = measure(" Hex RGBA ")
-        M4 = measure("mmm")
+        M1 = measure(" Color")
+        M2 = measure(" Hex RGB")
+        M3 = measure(" Hex RGBA")
+        M4 = measure(" 000")
 
         self.color_treeview.column("Color", width=M1)
         self.color_treeview.heading("Color", text="Color")
@@ -280,10 +290,11 @@ class DataFrame(tkinter.Frame):
         self.scroll.set(x, y)
 
     def insert(self, hex_val, R, G, B):
-        self.color_treeview.insert("", "end", values=VOID, tags=[hex_val])
-        self.color_treeview.tag_configure(hex_val, background=hex_val)
-        self.hexrgb_treeview.insert("", "end", values=[hex_val])
-        self.hexrgba_treeview.insert("", "end", values=[hex_val + "ff"])
+        rgb_val = hex_val.lstrip('#')
+        self.color_treeview.insert("", "end", values=VOID, tags=[rgb_val])
+        self.color_treeview.tag_configure(rgb_val, background=hex_val)
+        self.hexrgb_treeview.insert("", "end", values=[rgb_val])
+        self.hexrgba_treeview.insert("", "end", values=[rgb_val + "ff"])
         self.r_treeview.insert("", "end", values=[R])
         self.g_treeview.insert("", "end", values=[G])
         self.b_treeview.insert("", "end", values=[B])
@@ -319,6 +330,73 @@ class DataFrame(tkinter.Frame):
         self.r_treeview.bind("<Double-Button-1>", self.copy_r_data)
         self.g_treeview.bind("<Double-Button-1>", self.copy_g_data)
         self.b_treeview.bind("<Double-Button-1>", self.copy_b_data)
+
+
+class MixerFrame(tkinter.LabelFrame, SelectAfterReturn):
+    def __init__(self, master, text):
+        super().__init__(master, text=text)
+
+        ENTRY_MIXER = {
+            "justify": tkinter.CENTER,
+            "width" : 7,
+        }
+
+        self.color1_var = tkinter.StringVar(self, "#888888")
+        self.color2_var = tkinter.StringVar(self, "#888888")
+        self.color3_var = tkinter.StringVar(self, "#888888")
+
+        self.color1_entry = tkinter.Entry(
+            self, textvariable=self.color1_var, **ENTRY_MIXER)
+        self.color2_entry = tkinter.Entry(
+            self, textvariable=self.color2_var, **ENTRY_MIXER)
+        self.color3_entry = tkinter.Entry(
+            self, textvariable=self.color3_var, **ENTRY_MIXER)
+
+        self.color1_label = tkinter.Label(self, width=7, background="#888888")
+        self.color2_label = tkinter.Label(self, width=7, background="#888888")
+        self.color3_label = tkinter.Label(self, width=7, background="#888888")
+        self.plus_label = tkinter.Label(self, text="+")
+        self.equal_label = tkinter.Label(self, text="=")
+
+        self.set_events()
+
+    def grid(self, *args, **kwargs):
+        super().grid(*args, **kwargs)
+
+        self.color1_entry.grid(row=0, column=0, padx=(15, 0), pady=(15, 0),
+                               ipadx=6, ipady=3)
+        self.color1_label.grid(row=0, column=1, padx=15, pady=(15, 0),
+                               ipadx=6, ipady=3)
+
+        self.plus_label.grid(row=1, column=0, columnspan=2)
+
+        self.color2_entry.grid(row=2, column=0, padx=(15, 0), ipadx=6, ipady=3)
+        self.color2_label.grid(row=2, column=1, padx=15, ipadx=6, ipady=3)
+
+        self.equal_label.grid(row=3, column=0, columnspan=2)
+
+        self.color3_entry.grid(row=4, column=0, padx=(15, 0), pady=(0, 15),
+                               ipadx=6, ipady=3)
+        self.color3_label.grid(row=4, column=1, padx=15, pady=(0, 15),
+                               ipadx=6, ipady=3)
+
+    def mix_colors(self, event=None):
+        print("cosa", event)
+        color1 = self.color1_var.get()
+        color2 = self.color2_var.get()
+        mixed_color = color.mixer["IPT"](color1, color2)
+        self.color3_var.set(mixed_color)
+        self.color1_label.configure(background=color1)
+        self.color2_label.configure(background=color2)
+        self.color3_label.configure(background=mixed_color)
+        self.select_changed_value()
+
+    def set_events(self):
+        self.color1_entry.bind("<Return>", self.mix_colors)
+        self.color1_entry.bind("<KP_Enter>", self.mix_colors)
+
+        self.color2_entry.bind("<Return>", self.mix_colors)
+        self.color2_entry.bind("<KP_Enter>", self.mix_colors)
 
 
 # Memory efficient history storage.
@@ -358,6 +436,7 @@ class HistoryData:
                 f'background={self.background}, '
                 f'color_space={self.color_space}, '
                 f'outline={self.outline})')
+
 
 class History(list):
     def __init__(self):
@@ -406,7 +485,8 @@ class History(list):
             result = self[-1]
         return result
 
-class File(tkinter.Frame):
+
+class File(tkinter.Frame, SelectAfterReturn):
     def __init__(self, root, ):
         super().__init__(root)
         self.root = root
@@ -440,20 +520,16 @@ class File(tkinter.Frame):
         self.color_space = ColorSpaceFrame(
             self, text="Espacio de color", command=self.draw_wheel)
         self.data = DataFrame(self)
+        self.mixer = MixerFrame(self, "Mezclador de colores")
 
     def grid(self, *args, **kwargs):
         super().grid(*args, **kwargs)
         self.canvas.grid(row=0, column=3, rowspan=5, padx=15, pady=15)
-        self.settings.grid(row=0, column=0, **FRAME_GRID)
-        self.view.grid(row=1, column=0, **FRAME_GRID)
+        self.settings.grid(row=0, column=0, columnspan=2, **FRAME_GRID)
+        self.view.grid(row=1, column=0,  **FRAME_GRID)
         self.color_space.grid(row=2, column=0, **FRAME_GRID)
+        self.mixer.grid(row=1, column=1, rowspan=2, **FRAME_GRID)
         self.data.grid(row=3, column=0, **FRAME_GRID)
-
-    def select_changed_value(self):
-        widget = self.root.focus_get()
-        if isinstance(widget, tkinter.Entry):
-           index = len(widget.get())
-           widget.select_range(0, index)
 
     def draw_wheel(self, event=None):
         number = max(self.settings.number, 1)

@@ -153,7 +153,7 @@ class ViewSuite(BaseSuite):
         self.assertIsInstance(self.view.outline_checkbutton,
                               tkinter.Checkbutton)
         self.assertEqual(self.view.outline_checkbutton["text"],
-                         " Dibujar contorno")
+                         " Contorno")
         self.assertTrue(self.view.outline_checkbutton.winfo_manager())
 
 
@@ -256,15 +256,15 @@ class DataSuite(BaseSuite):
         self.data.insert("#888888", 255, 128, 64)
         for line in self.data.color_treeview.get_children():
             self.assertEqual(self.data.color_treeview.item(line)["tags"],
-                             ["#888888"])
+                             [888888])
             self.assertEqual(self.data.color_treeview.item(line)["values"],
                              [""])
         for line in self.data.hexrgb_treeview.get_children():
             self.assertEqual(self.data.hexrgb_treeview.item(line)["values"],
-                             ["#888888"])
+                             [888888])
         for line in self.data.hexrgba_treeview.get_children():
             self.assertEqual(self.data.hexrgba_treeview.item(line)["values"],
-                             ["#888888ff"])
+                             ["888888ff"])
         for line in self.data.r_treeview.get_children():
             self.assertEqual(self.data.r_treeview.item(line)["values"], [255])
         for line in self.data.g_treeview.get_children():
@@ -297,14 +297,14 @@ class DataSuite(BaseSuite):
         self.data.hexrgb_treeview.focus_set()
         self.data.hexrgb_treeview.focus(index)
         self.data.copy_hexrgb_data(None)
-        self.assertEqual(self.data.clipboard_get(), "#888888")
+        self.assertEqual(self.data.clipboard_get(), "888888")
 
         index = self.data.hexrgba_treeview.get_children()[0]
         self.data.hexrgba_treeview.selection_set(index)
         self.data.hexrgba_treeview.focus_set()
         self.data.hexrgba_treeview.focus(index)
         self.data.copy_hexrgba_data(None)
-        self.assertEqual(self.data.clipboard_get(), "#888888ff")
+        self.assertEqual(self.data.clipboard_get(), "888888ff")
 
         index = self.data.r_treeview.get_children()[0]
         self.data.r_treeview.selection_set(index)
@@ -339,6 +339,76 @@ class DataSuite(BaseSuite):
     def test_set_scroll_method(self):
         self.data.set_scroll(1, 1)
         self.assertEqual(self.data.scroll.get(), (1.0, 1.0))
+
+
+class MixerSuite(BaseSuite):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.mixer = file.MixerFrame(cls.root, "Mezclador de colores")
+        cls.mixer.grid(row=0, column=0)
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.mixer.destroy()
+        del cls.mixer
+        super().tearDownClass()
+
+    def test_mixer_instance(self):
+        self.assertIsInstance(self.mixer, file.MixerFrame)
+        self.assertTrue(self.mixer.winfo_manager())
+
+    def test_color1_var(self):
+        self.assertIsInstance(self.mixer.color1_var, tkinter.StringVar)
+
+    def test_color2_var(self):
+        self.assertIsInstance(self.mixer.color2_var, tkinter.StringVar)
+
+    def test_color3_var(self):
+        self.assertIsInstance(self.mixer.color3_var, tkinter.StringVar)
+
+    def test_color1_entry(self):
+        self.assertIsInstance(self.mixer.color1_entry, tkinter.Entry)
+        self.assertTrue(self.mixer.color1_entry.winfo_manager())
+
+    def test_color2_entry(self):
+        self.assertIsInstance(self.mixer.color2_entry, tkinter.Entry)
+        self.assertTrue(self.mixer.color2_entry.winfo_manager())
+
+    def test_color3_entry(self):
+        self.assertIsInstance(self.mixer.color3_entry, tkinter.Entry)
+        self.assertTrue(self.mixer.color3_entry.winfo_manager())
+
+    def test_color1_label(self):
+        self.assertIsInstance(self.mixer.color1_label, tkinter.Label)
+        self.assertEqual(self.mixer.color1_label["text"], "")
+        self.assertTrue(self.mixer.color1_label.winfo_manager())
+
+    def test_color2_label(self):
+        self.assertIsInstance(self.mixer.color2_label, tkinter.Label)
+        self.assertEqual(self.mixer.color2_label["text"], "")
+        self.assertTrue(self.mixer.color2_label.winfo_manager())
+
+    def test_color3_label(self):
+        self.assertIsInstance(self.mixer.color3_label, tkinter.Label)
+        self.assertEqual(self.mixer.color3_label["text"], "")
+        self.assertTrue(self.mixer.color3_label.winfo_manager())
+
+    def test_plus_label(self):
+        self.assertIsInstance(self.mixer.plus_label, tkinter.Label)
+        self.assertEqual(self.mixer.plus_label["text"], "+")
+        self.assertTrue(self.mixer.plus_label.winfo_manager())
+
+    def test_equal_label(self):
+        self.assertIsInstance(self.mixer.equal_label, tkinter.Label)
+        self.assertEqual(self.mixer.equal_label["text"], "=")
+        self.assertTrue(self.mixer.equal_label.winfo_manager())
+
+    # def test_mixer(self):
+    #     self.mixer.color1_var.set("#98c345")
+    #     self.mixer.color2_var.set("#00cb85")
+    #     self.mixer.color1_entry.event_generate("<Return>"
+    #     self.assertEqual(self.mixer.color3_var.get(), "#6dc767")
 
 
 class FileSuite(BaseSuite):

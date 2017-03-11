@@ -241,6 +241,14 @@ class App(tkinter.Frame):
         self.root.bind("<Control-Shift-Key-Z>", self.redo)
         self.root.bind("<Control-Key-y>", self.redo)
         self.root.protocol("WM_DELETE_WINDOW", self.save_config)
+        if self.root._windowingsystem == 'x11':
+            # Pasting from the clipboard doesn't delete the current selection
+            # on X11.
+            # See issue #5124.
+            for cls in 'Text', 'Entry', 'Spinbox':
+                self.root.bind_class(cls, '<<Paste>>',
+                                'catch {%W delete sel.first sel.last}\n' +
+                                self.root.bind_class(cls, '<<Paste>>'))
 
 
 if __name__ == '__main__':

@@ -40,10 +40,44 @@ def create_system(space):
     return hex_colors
 
 
+def hex_to_rgb(value):
+    """Return (red, green, blue) for the color given as #rrggbb."""
+    value = value.lstrip('#')
+    lv = len(value)
+    return tuple(int(value[i:i + lv // 3], 16) for i in range(0, lv, lv // 3))
+
+
+def hex_to_space(color, space):
+    color_tuple = hex_to_rgb(color)
+    values = list(i/255 for i in color_tuple)
+    return convert_color(sRGBColor(*values), space).get_value_tuple()
+
+
+def create_mixer(space):
+    def mix(color1, color2):
+        x1, y1, z1 = hex_to_space(color1, space)
+        x2, y2, z2 = hex_to_space(color2, space)
+        color3 = space((x1 + x2)/2, (y1 + y2)/2 , (z1 + z2)/2)
+        ans = convert_color(color3, sRGBColor)
+        ans = (ans.clamped_rgb_r, ans.clamped_rgb_g, ans.clamped_rgb_b)
+        ans = tuple(round(i*255) for i in ans)
+        return "#%02x%02x%02x" % ans
+    return mix
+
+
 space = {
-    "Lab":create_system(lchab),
-    "Luv":create_system(lchuv),
-    "HSL":create_system(hsl),
-    "HSV":create_system(hsv),
+    "Lab": create_system(lchab),
+    "Luv": create_system(lchuv),
+    "HSL": create_system(hsl),
+    "HSV": create_system(hsv),
     "IPT": create_system(ipt),
+}
+
+
+mixer = {
+    "Lab": create_mixer(LCHabColor),
+    "Luv": create_mixer(LCHuvColor),
+    "HSL": create_mixer(HSLColor),
+    "HSV": create_mixer(HSLColor),
+    "IPT": create_mixer(IPTColor),
 }
