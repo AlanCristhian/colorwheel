@@ -212,17 +212,23 @@ class DataFrame(tkinter.Frame):
         super().__init__(master)
 
         self.color_treeview = ttk.Treeview(
-            self, columns=["Color"], show="headings", height=8)
+            self, columns=["Color"], show="headings", height=8,
+            selectmode="none")
         self.hexrgb_treeview = ttk.Treeview(
-            self, columns=["Hex RGB"], show="headings", height=8)
+            self, columns=["Hex RGB"], show="headings", height=8,
+            selectmode="browse")
         self.hexrgba_treeview = ttk.Treeview(
-            self, columns=["Hex RGBA"], show="headings", height=8)
+            self, columns=["Hex RGBA"], show="headings", height=8,
+            selectmode="browse")
         self.r_treeview = ttk.Treeview(
-            self, columns=["R"], show="headings", height=8)
+            self, columns=["R"], show="headings", height=8,
+            selectmode="browse")
         self.g_treeview = ttk.Treeview(
-            self, columns=["G"], show="headings", height=8)
+            self, columns=["G"], show="headings", height=8,
+            selectmode="browse")
         self.b_treeview = ttk.Treeview(
-            self, columns=["B"], show="headings", height=8)
+            self, columns=["B"], show="headings", height=8,
+            selectmode="browse")
 
         measure = font.Font(master).measure
 
@@ -258,7 +264,6 @@ class DataFrame(tkinter.Frame):
         self.g_treeview.configure(yscrollcommand=self.set_scroll)
         self.b_treeview.configure(yscrollcommand=self.set_scroll)
 
-        self.copy_color_data = self.copy_data(self.color_treeview)
         self.copy_hexrgb_data = self.copy_data(self.hexrgb_treeview)
         self.copy_hexrgba_data = self.copy_data(self.hexrgba_treeview)
         self.copy_r_data = self.copy_data(self.r_treeview)
@@ -324,7 +329,6 @@ class DataFrame(tkinter.Frame):
         return copy_content
 
     def set_events(self):
-        self.color_treeview.bind("<Double-Button-1>", self.copy_color_data)
         self.hexrgb_treeview.bind("<Double-Button-1>", self.copy_hexrgb_data)
         self.hexrgba_treeview.bind("<Double-Button-1>", self.copy_hexrgba_data)
         self.r_treeview.bind("<Double-Button-1>", self.copy_r_data)
@@ -335,6 +339,7 @@ class DataFrame(tkinter.Frame):
 class MixerFrame(tkinter.LabelFrame, SelectAfterReturn):
     def __init__(self, master, text):
         super().__init__(master, text=text)
+        self.root = master
 
         ENTRY_MIXER = {
             "justify": tkinter.CENTER,

@@ -253,18 +253,18 @@ class DataSuite(BaseSuite):
         self.assertTrue(self.data.scroll.winfo_manager())
 
     def test_insert_method(self):
-        self.data.insert("#888888", 255, 128, 64)
+        self.data.insert("#aaaaaa", 255, 128, 64)
         for line in self.data.color_treeview.get_children():
             self.assertEqual(self.data.color_treeview.item(line)["tags"],
-                             [888888])
+                             ["aaaaaa"])
             self.assertEqual(self.data.color_treeview.item(line)["values"],
                              [""])
         for line in self.data.hexrgb_treeview.get_children():
             self.assertEqual(self.data.hexrgb_treeview.item(line)["values"],
-                             [888888])
+                             ["aaaaaa"])
         for line in self.data.hexrgba_treeview.get_children():
             self.assertEqual(self.data.hexrgba_treeview.item(line)["values"],
-                             ["888888ff"])
+                             ["aaaaaaff"])
         for line in self.data.r_treeview.get_children():
             self.assertEqual(self.data.r_treeview.item(line)["values"], [255])
         for line in self.data.g_treeview.get_children():
@@ -273,7 +273,7 @@ class DataSuite(BaseSuite):
             self.assertEqual(self.data.b_treeview.item(line)["values"], [64])
 
     def test_delete_all_method(self):
-        self.data.insert("#888888", 255, 128, 64)
+        self.data.insert("#aaaaaa", 255, 128, 64)
         self.data.delete_all()
         self.assertEqual(self.data.color_treeview.get_children(), ())
         self.assertEqual(self.data.hexrgb_treeview.get_children(), ())
@@ -283,28 +283,21 @@ class DataSuite(BaseSuite):
         self.assertEqual(self.data.b_treeview.get_children(), ())
 
     def test_copy_data_method(self):
-        self.data.insert("#888888", 255, 128, 64)
-
-        index = self.data.color_treeview.get_children()[0]
-        self.data.color_treeview.selection_set(index)
-        self.data.color_treeview.focus_set()
-        self.data.color_treeview.focus(index)
-        self.data.copy_color_data(None)
-        self.assertEqual(self.data.clipboard_get(), "")
+        self.data.insert("#aaaaaa", 255, 128, 64)
 
         index = self.data.hexrgb_treeview.get_children()[0]
         self.data.hexrgb_treeview.selection_set(index)
         self.data.hexrgb_treeview.focus_set()
         self.data.hexrgb_treeview.focus(index)
         self.data.copy_hexrgb_data(None)
-        self.assertEqual(self.data.clipboard_get(), "888888")
+        self.assertEqual(self.data.clipboard_get(), "aaaaaa")
 
         index = self.data.hexrgba_treeview.get_children()[0]
         self.data.hexrgba_treeview.selection_set(index)
         self.data.hexrgba_treeview.focus_set()
         self.data.hexrgba_treeview.focus(index)
         self.data.copy_hexrgba_data(None)
-        self.assertEqual(self.data.clipboard_get(), "888888ff")
+        self.assertEqual(self.data.clipboard_get(), "aaaaaaff")
 
         index = self.data.r_treeview.get_children()[0]
         self.data.r_treeview.selection_set(index)
@@ -407,7 +400,7 @@ class MixerSuite(BaseSuite):
     # def test_mixer(self):
     #     self.mixer.color1_var.set("#98c345")
     #     self.mixer.color2_var.set("#00cb85")
-    #     self.mixer.color1_entry.event_generate("<Return>"
+    #     self.mixer.color1_entry.event_generate("<Return>")
     #     self.assertEqual(self.mixer.color3_var.get(), "#6dc767")
 
 
