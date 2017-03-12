@@ -92,6 +92,18 @@ class SettingsFrame(tkinter.LabelFrame):
         self.luminosity_scale = tkinter.Scale(
             self, variable=self.luminosity_var, **SCALE_100)
 
+        self.set_events()
+
+    def incrementer(self, variable):
+        def increment(self, event=None):
+            variable.set(variable.get() + 1)
+        return increment
+
+    def decrementer(self, variable):
+        def decrement(self, event=None):
+            variable.set(variable.get() - 1)
+        return decrement
+
     def grid(self, *args, **kwargs):
         super().grid(*args, **kwargs)
 
@@ -114,6 +126,25 @@ class SettingsFrame(tkinter.LabelFrame):
         self.luminosity_label.grid(row=3, column=0, **GRID_DIMENSIONS)
         self.luminosity_entry.grid(row=3, column=1, **ENTRY_DIMENSIONS)
         self.luminosity_scale.grid(row=3, column=2, **GRID_DIMENSIONS)
+
+    def set_events(self):
+        increment_number_var = self.incrementer(self.number_var)
+        decrement_number_var = self.decrementer(self.number_var)
+        increment_start_var = self.incrementer(self.start_var)
+        decrement_start_var = self.decrementer(self.start_var)
+        increment_saturation_var = self.incrementer(self.saturation_var)
+        decrement_saturation_var = self.decrementer(self.saturation_var)
+        increment_luminosity_var = self.incrementer(self.luminosity_var)
+        decrement_luminosity_var = self.decrementer(self.luminosity_var)
+
+        self.number_entry.bind("<Up>", increment_number_var)
+        self.number_entry.bind("<Down>", decrement_number_var)
+        self.start_entry.bind("<Up>", increment_start_var)
+        self.start_entry.bind("<Down>", decrement_start_var)
+        self.saturation_entry.bind("<Up>", increment_saturation_var)
+        self.saturation_entry.bind("<Down>", decrement_saturation_var)
+        self.luminosity_entry.bind("<Up>", increment_luminosity_var)
+        self.luminosity_entry.bind("<Down>", decrement_luminosity_var)
 
     @property
     def number(self): return self.number_var.get()
