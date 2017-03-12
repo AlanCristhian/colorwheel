@@ -417,7 +417,6 @@ class MixerFrame(tkinter.LabelFrame, SelectAfterReturn):
                                ipadx=6, ipady=3)
 
     def mix_colors(self, event=None):
-        print("cosa", event)
         color1 = self.color1_var.get()
         color2 = self.color2_var.get()
         mixed_color = color.mixer["IPT"](color1, color2)
