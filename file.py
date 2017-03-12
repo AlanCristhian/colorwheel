@@ -578,6 +578,7 @@ class File(tkinter.Frame, SelectAfterReturn):
         name = self.color_space.space
         colors = color.space[name](start, number, saturation, luminosity)
         outline = self.view.outline
+        x1, y1, x2, y2 = self.position
 
         if self.update_history:
             self.history.append(HistoryData(
@@ -592,13 +593,19 @@ class File(tkinter.Frame, SelectAfterReturn):
 
         self.data.delete_all()
 
-        for i, (hex_val, R, G, B) in enumerate(colors):
-            self.canvas.create_arc(self.position, fill=hex_val,
-                                   start=(i*step), extent=step,
-                                   outline="black" if outline else hex_val)
+        if number == 0 or number == 1:
+            hex_val, R, G, B = next(colors)
+            self.canvas.create_oval(x1 , y1 , x2 , y2 ,
+                                    outline="black" if outline else hex_val,
+                                    fill=hex_val)
             self.data.insert(hex_val, R, G, B)
+        else:
+            for i, (hex_val, R, G, B) in enumerate(colors):
+                self.canvas.create_arc(self.position, fill=hex_val,
+                                       start=(i*step), extent=step,
+                                       outline="black" if outline else hex_val)
+                self.data.insert(hex_val, R, G, B)
 
-        x1, y1, x2, y2 = self.position
         self.canvas.create_oval(x1 + 50, y1 + 50, x2 - 50, y2 - 50,
                                 fill=background,
                                 outline="black" if outline else background)
