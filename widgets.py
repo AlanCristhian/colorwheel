@@ -82,10 +82,11 @@ class ClosableNotebook(ttk.Notebook):
                                 "children": [
                                     ("ClosableNotebook.label", {"side": "left", "sticky": ''}),
                                     ("ClosableNotebook.close", {"side": "left", "sticky": ''}),
-                                ]
-                        })
-                    ]
-                })
-            ]
-        })
-    ])
+                                    ]
+                            })
+                        ]
+                    })
+                ]
+            })
+        ])
+        style.configure("ClosableNotebook.Tab", padding=(10, 3))
