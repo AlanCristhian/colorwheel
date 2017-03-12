@@ -27,12 +27,12 @@ class ClosableNotebook(ttk.Notebook):
 
         if "close" in element:
             index = self.index("@%d,%d" % (event.x, event.y))
-            self.state(['pressed'])
+            self.state(["pressed"])
             self._active = index
 
     def on_close_release(self, event):
         """Called when the button is released over the close button"""
-        if not self.instate(['pressed']):
+        if not self.instate(["pressed"]):
             return
 
         element =  self.identify(event.x, event.y)
@@ -48,20 +48,9 @@ class ClosableNotebook(ttk.Notebook):
     def __initialize_custom_style(self):
         style = ttk.Style()
         self.images = (
-            tkinter.PhotoImage("img_close", data='''
-                R0lGODlhCAAIAMIBAAAAADs7O4+Pj9nZ2Ts7Ozs7Ozs7Ozs7OyH+EUNyZWF0ZWQg
-                d2l0aCBHSU1QACH5BAEKAAQALAAAAAAIAAgAAAMVGDBEA0qNJyGw7AmxmuaZhWEU
-                5kEJADs=
-                '''),
-            tkinter.PhotoImage("img_closeactive", data='''
-                R0lGODlhCAAIAMIEAAAAAP/SAP/bNNnZ2cbGxsbGxsbGxsbGxiH5BAEKAAQALAAA
-                AAAIAAgAAAMVGDBEA0qNJyGw7AmxmuaZhWEU5kEJADs=
-                '''),
-            tkinter.PhotoImage("img_closepressed", data='''
-                R0lGODlhCAAIAMIEAAAAAOUqKv9mZtnZ2Ts7Ozs7Ozs7Ozs7OyH+EUNyZWF0ZWQg
-                d2l0aCBHSU1QACH5BAEKAAQALAAAAAAIAAgAAAMVGDBEA0qNJyGw7AmxmuaZhWEU
-                5kEJADs=
-            ''')
+            tkinter.PhotoImage("img_close", file="close.png"),
+            tkinter.PhotoImage("img_closeactive", file="active.png"),
+            tkinter.PhotoImage("img_closepressed", file="pressed.png")
         )
 
         style.element_create("close", "image", "img_close",
@@ -90,3 +79,4 @@ class ClosableNotebook(ttk.Notebook):
             })
         ])
         style.configure("ClosableNotebook.Tab", padding=(10, 3))
+
