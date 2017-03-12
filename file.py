@@ -377,9 +377,9 @@ class MixerFrame(tkinter.LabelFrame, SelectAfterReturn):
             "width" : 7,
         }
 
-        self.color1_var = tkinter.StringVar(self, "#888888")
-        self.color2_var = tkinter.StringVar(self, "#888888")
-        self.color3_var = tkinter.StringVar(self, "#888888")
+        self.color1_var = tkinter.StringVar(self, "#B3B3B3")
+        self.color2_var = tkinter.StringVar(self, "#B3B3B3")
+        self.color3_var = tkinter.StringVar(self, "#B3B3B3")
 
         self.color1_entry = tkinter.Entry(
             self, textvariable=self.color1_var, **ENTRY_MIXER)
@@ -388,9 +388,9 @@ class MixerFrame(tkinter.LabelFrame, SelectAfterReturn):
         self.color3_entry = tkinter.Entry(
             self, textvariable=self.color3_var, **ENTRY_MIXER)
 
-        self.color1_label = tkinter.Label(self, width=7, background="#888888")
-        self.color2_label = tkinter.Label(self, width=7, background="#888888")
-        self.color3_label = tkinter.Label(self, width=7, background="#888888")
+        self.color1_label = tkinter.Label(self, width=7, background="#B3B3B3")
+        self.color2_label = tkinter.Label(self, width=7, background="#B3B3B3")
+        self.color3_label = tkinter.Label(self, width=7, background="#B3B3B3")
         self.plus_label = tkinter.Label(self, text="+")
         self.equal_label = tkinter.Label(self, text="=")
 
@@ -531,7 +531,7 @@ class File(tkinter.Frame, SelectAfterReturn):
         self.update_history = True
 
         self.height = 630
-        self.width = 750
+        self.width = 762
         self.set_position()
 
         self.create_widgets()

@@ -79,4 +79,5 @@ class ClosableNotebook(ttk.Notebook):
             })
         ])
         style.configure("ClosableNotebook.Tab", padding=(10, 3))
+        style.configure("ClosableNotebook", background="#B3B3B3")
 

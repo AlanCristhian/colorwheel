@@ -254,4 +254,5 @@ class App(tkinter.Frame):
 if __name__ == '__main__':
     root = tkinter.Tk()
     app = App(root)
+    root.config(background="#B3B3B3")
     root.mainloop()
