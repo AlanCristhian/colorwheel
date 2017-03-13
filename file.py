@@ -618,7 +618,6 @@ class File(tkinter.Frame, SelectAfterReturn):
         self.event_generate("<<WheelDrawed>>")
 
     def set_events(self):
-        # self.root.bind("<Configure>", self.resize_canvas)
         self.settings.number_entry.bind("<Return>", self.draw_wheel)
         self.settings.number_entry.bind("<KP_Enter>", self.draw_wheel)
         self.settings.number_scale.bind("<ButtonRelease-1>", self.draw_wheel)

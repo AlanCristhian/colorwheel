@@ -89,7 +89,7 @@ class ClosableNotebook(ttk.Notebook):
         )
 
         style.element_create("close", "image", "img_close",
-                            ("pressed", "!disabled", "img_closepressed"),
+                            ("pressed", "active", "!disabled", "img_closepressed"),
                             ("active", "!disabled", "img_closeactive"), border=8, sticky='')
         style.layout("ClosableNotebook", [("ClosableNotebook.client", {"sticky": "nswe"})])
         style.layout("ClosableNotebook.Tab", [
