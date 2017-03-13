@@ -2,13 +2,32 @@ import tkinter
 from tkinter import ttk, messagebox
 
 
+def update_title(self, wheel):
+    parent = self.master
+    while True:
+        child = parent
+        parent = parent.master
+        if parent is None:
+            child.title(wheel.file_path if wheel.file_path
+                        else wheel.temporary_name)
+            break
+
+
+def _in(a, b):
+    return a in b
+
+
+def _not_in(a, b):
+    return a not in b
+
+
 class ClosableNotebook(ttk.Notebook):
     """A ttk Notebook with close buttons on each tab"""
 
     __initialized = False
 
     def __init__(self, *args, check_unsaved=False, confirm_close=None,
-                 **kwargs):
+                 takefocus=True, **kwargs):
         if not self.__initialized:
             self.__initialize_custom_style()
             self.__inititialized = True
@@ -20,65 +39,90 @@ class ClosableNotebook(ttk.Notebook):
         self._check_unsaved = check_unsaved
         self._confirm_close = confirm_close
 
-        self.bind("<ButtonPress-1>", self.on_close_press, True)
-        self.bind("<ButtonRelease-1>", self.on_close_release)
+        self.bind("<ButtonPress-1>", self.close_press_command("close"), True)
+        self.bind("<ButtonRelease-1>", self.close_release_command("close"))
+
+        self.bind(
+            "<ButtonPress-2>",
+            self.close_press_command("close", not_=True),
+            True)
+        self.bind(
+            "<ButtonRelease-2>",
+            self.close_release_command("close", not_=True),
+            True)
+
+        self.bind("<ButtonRelease-1>", self.on_tab_focus, True)
+
+    def on_tab_focus(self, event):
+        element = self.identify(event.x, event.y)
+        if not "close" in element:
+            tab_id = self.select()
+            index = self.index(tab_id)
+            key = self.tabs()[index].split(".")[2]
+            frame = self.children[key]
+            wheel = frame.winfo_children()[0]
+            update_title(self, wheel)
 
     def confirm_close(self, data):
         if self._confirm_close:
             self._confirm_close(data)
 
-    def on_close_press(self, event):
-        """Called when the button is pressed over the close button"""
+    def close_press_command(self, obj, not_=False):
+        def on_close_press(event):
+            """Called when the button is pressed over the close button"""
+            element = self.identify(event.x, event.y)
+            check = _not_in if not_ else _in
+            if check(obj, element):
+                index = self.index("@%d,%d" % (event.x, event.y))
+                self.state(["pressed"])
+                self._active = index
+        return on_close_press
 
-        element = self.identify(event.x, event.y)
+    def close_release_command(self, obj, not_=False):
+        def on_close_release(event):
+            """Called when the button is released over the close button"""
+            if not self.instate(["pressed"]):
+                return
 
-        if "close" in element:
+            element =  self.identify(event.x, event.y)
             index = self.index("@%d,%d" % (event.x, event.y))
-            self.state(["pressed"])
-            self._active = index
 
-    def on_close_release(self, event):
-        """Called when the button is released over the close button"""
-        if not self.instate(["pressed"]):
-            return
-
-        element =  self.identify(event.x, event.y)
-        index = self.index("@%d,%d" % (event.x, event.y))
-
-        if self._check_unsaved:
-            if "close" in element and self._active == index:
-                key = self.tabs()[index].split(".")[2]
-                frame = self.children[key]
-                wheel = frame.winfo_children()[0]
-                if wheel.saved:
-                    self.forget(index)
-                    self.event_generate("<<NotebookTabClosed>>")
-                else:
-                    file_id = wheel.file_path if wheel.file_path\
-                              else "este documento sin título"
-                    response = messagebox.askyesnocancel(
-                        title="Individual",
-                        message=f"¿Desea guardar los cambios en {file_id} "
-                                f"antes de cerrar?",
-                        detail="Si cierra sin guardar se "
-                               "perderán los cambios realizados",
-                        icon="warning")
-                    if response is None:
-                        pass
-                    elif response is True:
-                        self.confirm_close(data=index)
+            if self._check_unsaved:
+                check = _not_in if not_ else _in
+                if check(obj, element) and self._active == index:
+                    key = self.tabs()[index].split(".")[2]
+                    frame = self.children[key]
+                    wheel = frame.winfo_children()[0]
+                    if wheel.saved:
                         self.forget(index)
                         self.event_generate("<<NotebookTabClosed>>")
                     else:
-                        self.forget(index)
-                        self.event_generate("<<NotebookTabClosed>>")
-        else:
-            if "close" in element and self._active == index:
-                self.forget(index)
-                self.event_generate("<<NotebookTabClosed>>")
+                        file_id = wheel.file_path if wheel.file_path\
+                                  else "este documento sin título"
+                        response = messagebox.askyesnocancel(
+                            title="Individual",
+                            message=f"¿Desea guardar los cambios en {file_id} "
+                                    f"antes de cerrar?",
+                            detail="Si cierra sin guardar se "
+                                   "perderán los cambios realizados",
+                            icon="warning")
+                        if response is None:
+                            pass
+                        elif response is True:
+                            self.confirm_close(data=index)
+                            self.forget(index)
+                            self.event_generate("<<NotebookTabClosed>>")
+                        else:
+                            self.forget(index)
+                            self.event_generate("<<NotebookTabClosed>>")
+            else:
+                if obj in element and self._active == index:
+                    self.forget(index)
+                    self.event_generate("<<NotebookTabClosed>>")
 
-        self.state(["!pressed"])
-        self._active = None
+            self.state(["!pressed"])
+            self._active = None
+        return on_close_release
 
     def __initialize_custom_style(self):
         style = ttk.Style()

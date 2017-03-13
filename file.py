@@ -527,6 +527,7 @@ class File(tkinter.Frame, SelectAfterReturn):
         self.root = root
         self.default_sizes = True
         self.file_path = ""
+        self.temporary_name = None
         self.history = History()
         self.update_history = True
         self.saved = True

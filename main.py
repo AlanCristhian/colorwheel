@@ -28,7 +28,7 @@ def wheel_name(text):
     name = pathlib.Path(text).resolve()
     parts = name.parent.parts
     if parts:
-        return str(pathlib.Path()/parts[-1]/name.name)
+        return str(name.name)
     else:
         return "untitled-%s" % counter()
 
@@ -95,6 +95,8 @@ class App(tkinter.Frame):
                    else wheel_name(name)
         frame = tkinter.Frame(self.notebook)
         wheel = file.File(frame)
+        if name is None:
+            wheel.temporary_name = tab_name
         wheel.grid(padx=0, pady=0, row=0, column=0)
         if name:
             wheel.file_path = str(name)
@@ -103,6 +105,7 @@ class App(tkinter.Frame):
         self.notebook.select(frame)
         wheel.draw_default_wheel()
         wheel.saved = False
+        widgets.update_title(self, wheel)
         return wheel
 
     def get_wheel_and_tab_id(self, index=None):
@@ -163,11 +166,11 @@ class App(tkinter.Frame):
             self.file_path = dialog.name
             dialog.close()
             wheel.file_path = str(wheel_path)
-            new_text = pathlib.Path() / wheel_path.parent.parts[-1] /\
-                       wheel_path.name
+            new_text = wheel_path.name
             wheel.focus_set()
             tab_id = self.notebook.select()
             self.notebook.tab(str(tab_id), text=str(new_text))
+            widgets.update_title(self, wheel)
 
     def open_wheel(self, event=None, path=None):
         if path:
