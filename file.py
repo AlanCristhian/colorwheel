@@ -529,13 +529,13 @@ class File(tkinter.Frame, SelectAfterReturn):
         self.file_path = ""
         self.history = History()
         self.update_history = True
+        self.saved = True
 
         self.height = 630
         self.width = 762
         self.set_position()
 
         self.create_widgets()
-        self.draw_wheel()
         self.set_events()
 
     def set_position(self):
@@ -566,7 +566,7 @@ class File(tkinter.Frame, SelectAfterReturn):
         self.mixer.grid(row=1, column=1, rowspan=2, **FRAME_GRID)
         self.data.grid(row=3, column=0, **FRAME_GRID)
 
-    def draw_wheel(self, event=None):
+    def draw_default_wheel(self, event=None):
         number = max(self.settings.number, 1)
         saturation = self.settings.saturation
         luminosity = self.settings.luminosity
@@ -612,33 +612,10 @@ class File(tkinter.Frame, SelectAfterReturn):
         self.canvas.update()
         self.select_changed_value()
 
-    def resize_canvas(self, event):
-        if self.default_sizes:
-            settings_w = self.settings_frame.winfo_width()
-            root_w = self.root.winfo_width()
-            root_h = self.root.winfo_height()
-
-            self.width = root_w - settings_w
-            self.height = root_h
-            self.default_sizes = False
-        else:
-            self.width = 650
-            self.height = 650
-            self.default_sizes = True
-
-        # self.root.unbind("<Configure>")
-
-        self.canvas.destroy()
-        self.settings.destroy()
-        self.view.destroy()
-        self.color_space_frame.destroy()
-        self.data_frame.destroy()
-
-        self.set_position()
-        self.create_widgets()
-        self.distribute_widgets()
-        self.draw_wheel()
-        self.set_events()
+    def draw_wheel(self, event=None):
+        self.draw_default_wheel()
+        self.saved = False
+        self.event_generate("<<WheelDrawed>>")
 
     def set_events(self):
         # self.root.bind("<Configure>", self.resize_canvas)
