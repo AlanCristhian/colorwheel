@@ -129,7 +129,7 @@ class App(tkinter.Frame):
                     f"luminosity = {wheel.settings.luminosity}\n"
                     f"background = {wheel.view.background}\n"
                     f"outline = {wheel.view.outline}\n"
-                    f"color_space = {wheel.color_space.space}")
+                    f"color_space = {wheel.view.space}")
             wheel.saved = True
             text = self.notebook.tab(tab_id)["text"].replace("⚫ ", "")
             self.notebook.tab(tab_id, text=text)
@@ -155,10 +155,8 @@ class App(tkinter.Frame):
                 f"luminosity = {wheel.settings.luminosity}\n"
                 f"background = {wheel.view.background}\n"
                 f"outline = {wheel.view.outline}\n"
-                f"color_space = {wheel.color_space.space}")
+                f"color_space = {wheel.view.space}")
             wheel.saved = True
-            text = self.notebook.tab(tab_id)["text"].replace("⚫ ", "")
-            self.notebook.tab(tab_id, text=text)
 
             wheel_path = pathlib.Path(dialog.name)
             self.current_directory = str(wheel_path.parent)
@@ -190,6 +188,8 @@ class App(tkinter.Frame):
                 wheel = self.new_wheel(name=text)
                 wheel.file_path = dialog.name
                 dialog.close()
+            else:
+                return
         if "wheel" in settings:
             wheel.settings.number = settings["wheel"]["number"]
             wheel.settings.start = settings["wheel"]["start"]
@@ -197,13 +197,13 @@ class App(tkinter.Frame):
             wheel.settings.luminosity = settings["wheel"]["luminosity"]
             wheel.view.background = settings["wheel"]["background"]
             wheel.view.outline = settings["wheel"]["outline"]
-            wheel.color_space.space = settings["wheel"]["color_space"]
+            wheel.view.space = settings["wheel"]["color_space"]
             wheel.draw_wheel()
-            wheel.saved = True
             wheel.focus_set()
             tab_id = self.notebook.select()
             text = self.notebook.tab(tab_id)["text"].replace("⚫ ", "")
             self.notebook.tab(tab_id, text=text)
+        wheel.saved = True
 
     def undo(self, event=None):
         wheel, tab_id = self.get_wheel_and_tab_id()
@@ -215,7 +215,7 @@ class App(tkinter.Frame):
         wheel.settings.luminosity = data.luminosity
         wheel.view.background = data.background
         wheel.view.outline = data.outline
-        wheel.color_space.space = data.color_space
+        wheel.view.space = data.color_space
         wheel.update_history = False
         wheel.draw_wheel()
         wheel.update_history = True
@@ -230,7 +230,7 @@ class App(tkinter.Frame):
         wheel.settings.luminosity = data.luminosity
         wheel.view.background = data.background
         wheel.view.outline = data.outline
-        wheel.color_space.space = data.color_space
+        wheel.view.space = data.color_space
         wheel.update_history = False
         wheel.draw_wheel()
         wheel.update_history = True
@@ -302,4 +302,5 @@ if __name__ == '__main__':
     root = tkinter.Tk()
     app = App(root)
     root.config(background="#B3B3B3")
+    s = ttk.Style()
     root.mainloop()

@@ -156,6 +156,20 @@ class ViewSuite(BaseSuite):
                          " Contorno")
         self.assertTrue(self.view.outline_checkbutton.winfo_manager())
 
+    # color space
+    def test_color_space_var(self):
+        self.assertIsInstance(self.view.color_space_var, tkinter.StringVar)
+
+    def test_color_space_label(self):
+        self.assertIsInstance(self.view.color_space_label, tkinter.Label)
+        self.assertEqual(self.view.color_space_label["text"],
+                         "Espacio de color:")
+        self.assertTrue(self.view.color_space_label.winfo_manager())
+
+    def test_color_space_combo(self):
+        self.assertIsInstance(self.view.color_space_combo, ttk.Combobox)
+        self.assertTrue(self.view.color_space_combo.winfo_manager())
+
 
 class SpaceSuite(BaseSuite):
     @classmethod
@@ -169,40 +183,6 @@ class SpaceSuite(BaseSuite):
         cls.space.destroy()
         del cls.space
         super().tearDownClass()
-
-    def test_color_space_frame(self):
-        self.assertIsInstance(self.space, file.ColorSpaceFrame)
-        self.assertEqual(self.space["text"], "Espacio de color")
-        self.assertTrue(self.space.winfo_manager())
-
-    def test_color_space_var(self):
-        self.assertIsInstance(self.space.color_space_var, tkinter.StringVar)
-
-    def test_lchab_radiobutton(self):
-        self.assertIsInstance(self.space.lchab_radiobutton, tkinter.Radiobutton)
-        self.assertEqual(self.space.lchab_radiobutton["text"], "Lab")
-        self.assertTrue(self.space.lchab_radiobutton.winfo_manager())
-
-    def test_lchuv_radiobutton(self):
-        self.assertIsInstance(self.space.lchuv_radiobutton, tkinter.Radiobutton)
-        self.assertEqual(self.space.lchuv_radiobutton["text"], "Luv")
-        self.assertTrue(self.space.lchuv_radiobutton.winfo_manager())
-
-    def test_hsl_radiobutton(self):
-        self.assertIsInstance(self.space.hsl_radiobutton, tkinter.Radiobutton)
-        self.assertEqual(self.space.hsl_radiobutton["text"], "HSL")
-        self.assertTrue(self.space.hsl_radiobutton.winfo_manager())
-
-    def test_hsv_radiobutton(self):
-        self.assertIsInstance(self.space.hsv_radiobutton, tkinter.Radiobutton)
-        self.assertEqual(self.space.hsv_radiobutton["text"], "HSV")
-        self.assertTrue(self.space.hsv_radiobutton.winfo_manager())
-
-    def test_ipt_radiobutton(self):
-        self.assertIsInstance(self.space.ipt_radiobutton, tkinter.Radiobutton)
-        self.assertEqual(self.space.ipt_radiobutton["text"], "IPT")
-        self.assertTrue(self.space.ipt_radiobutton.winfo_manager())
-
 
 class DataSuite(BaseSuite):
     @classmethod
@@ -351,6 +331,14 @@ class MixerSuite(BaseSuite):
         self.assertIsInstance(self.mixer, file.MixerFrame)
         self.assertTrue(self.mixer.winfo_manager())
 
+    def test_algorithm_label(self):
+        self.assertIsInstance(self.mixer.algorithm_label, tkinter.Label)
+        self.assertTrue(self.mixer.algorithm_label.winfo_manager())
+
+    def test_algorithm_combo(self):
+        self.assertIsInstance(self.mixer.algorithm_combo, ttk.Combobox)
+        self.assertTrue(self.mixer.algorithm_combo.winfo_manager())
+
     def test_color1_var(self):
         self.assertIsInstance(self.mixer.color1_var, tkinter.StringVar)
 
@@ -426,11 +414,6 @@ class FileSuite(BaseSuite):
         self.assertEqual(self.app.settings["text"],
                          "Ajustes de la rueda")
         self.assertTrue(self.app.settings.winfo_manager())
-
-    def test_color_space(self):
-        self.assertIsInstance(self.app.color_space, file.ColorSpaceFrame)
-        self.assertEqual(self.app.color_space["text"], "Espacio de color")
-        self.assertTrue(self.app.color_space.winfo_manager())
 
     def test_data(self):
         self.assertIsInstance(self.app.data, file.DataFrame)

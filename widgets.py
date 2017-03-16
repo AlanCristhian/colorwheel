@@ -1,4 +1,5 @@
 import tkinter
+import _tkinter
 from tkinter import ttk, messagebox
 
 
@@ -57,11 +58,15 @@ class ClosableNotebook(ttk.Notebook):
         element = self.identify(event.x, event.y)
         if not "close" in element:
             tab_id = self.select()
-            index = self.index(tab_id)
-            key = self.tabs()[index].split(".")[2]
-            frame = self.children[key]
-            wheel = frame.winfo_children()[0]
-            update_title(self, wheel)
+            try:
+                index = self.index(tab_id)
+                key = self.tabs()[index].split(".")[2]
+                frame = self.children[key]
+                wheel = frame.winfo_children()[0]
+                update_title(self, wheel)
+            except _tkinter.TclError as error:
+                if error.args != ('Invalid slave specification ',):
+                    raise
 
     def confirm_close(self, data):
         if self._confirm_close:

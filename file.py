@@ -10,9 +10,17 @@ logging.basicConfig(filename="color_wheel.log", level=logging.ERROR)
 
 GRID_DIMENSIONS = {
     "sticky": tkinter.E,
-    "padx": (15, 15),
+    "padx": (15, 0),
 }
-ENTRY_DIMENSIONS = {
+VIEW_GRID = {
+    **GRID_DIMENSIONS,
+    "pady": (15, 0),
+}
+VIEW_GRID_BOTTOM = {
+    **GRID_DIMENSIONS,
+    "pady": 15,
+}
+ENTRY_GRID = {
     "padx": 0,
     "ipady": 3,
     "ipadx": 6,
@@ -38,7 +46,8 @@ SCALE_100 = {
 FRAME_GRID = {
     "sticky": tkinter.NSEW,
     "padx": (15, 0),
-    "pady": (15, 0)
+    "pady": (15, 0),
+    "ipadx":0,
 }
 RADIOBUTTON_GRID = {
     "ipadx": 6,
@@ -47,6 +56,7 @@ RADIOBUTTON_GRID = {
 }
 VOID = [""]
 NORTH_SOUTH = tkinter.N + tkinter.S
+
 
 class SelectAfterReturn:
     def select_changed_value(self):
@@ -109,22 +119,22 @@ class SettingsFrame(tkinter.LabelFrame):
 
         # number
         self.number_label.grid(row=0, column=0, **GRID_DIMENSIONS)
-        self.number_entry.grid(row=0, column=1, **ENTRY_DIMENSIONS)
+        self.number_entry.grid(row=0, column=1, **ENTRY_GRID)
         self.number_scale.grid(row=0, column=2, **GRID_DIMENSIONS)
 
         # start
         self.start_label.grid(row=1, column=0, **GRID_DIMENSIONS)
-        self.start_entry.grid(row=1, column=1, **ENTRY_DIMENSIONS)
+        self.start_entry.grid(row=1, column=1, **ENTRY_GRID)
         self.start_scale.grid(row=1, column=2, **GRID_DIMENSIONS)
 
         # Saturation
         self.saturation_label.grid(row=2, column=0, **GRID_DIMENSIONS)
-        self.saturation_entry.grid(row=2, column=1, **ENTRY_DIMENSIONS)
+        self.saturation_entry.grid(row=2, column=1, **ENTRY_GRID)
         self.saturation_scale.grid(row=2, column=2, **GRID_DIMENSIONS)
 
         # luminosity
         self.luminosity_label.grid(row=3, column=0, **GRID_DIMENSIONS)
-        self.luminosity_entry.grid(row=3, column=1, **ENTRY_DIMENSIONS)
+        self.luminosity_entry.grid(row=3, column=1, **ENTRY_GRID)
         self.luminosity_scale.grid(row=3, column=2, **GRID_DIMENSIONS)
 
     def set_events(self):
@@ -182,57 +192,38 @@ class ViewFrame(tkinter.LabelFrame):
             self, text=" Contorno",
             variable=self.outline_var, command=command)
 
+        # color space
+        self.color_space_var = tkinter.StringVar(self, "HSL")
+        self.color_space_label = tkinter.Label(self, text="Espacio de color:")
+        self.color_space_combo = ttk.Combobox(
+            self, textvariable=self.color_space_var, width=7,
+            justify=tkinter.CENTER,
+            values="Lab Luv HSL HSV IPT JCh")
+        self.color_space_combo.bind("<<ComboboxSelected>>", command)
+
     def grid(self, *args, **kwargs):
         super().grid(*args, **kwargs)
-        self.background_label.grid(row=0, column=0, pady=(15, 0),
-                                   **GRID_DIMENSIONS)
+        self.background_label.grid(row=0, column=0, **VIEW_GRID)
         self.background_entry.grid(row=0, column=1, pady=(15, 0),
-                                    **ENTRY_DIMENSIONS)
-        self.outline_checkbutton.grid(row=0, column=2, pady=(15, 0),
-                                    **GRID_DIMENSIONS)
+                                   **{**ENTRY_GRID, "padx": (15, 0)})
+        self.outline_checkbutton.grid(row=0, column=2, **VIEW_GRID_BOTTOM)
+        self.color_space_label.grid(row=1, column=0, **VIEW_GRID_BOTTOM)
+        self.color_space_combo.grid(row=1, column=1, **VIEW_GRID_BOTTOM)
 
     @property
     def background(self): return self.background_var.get()
+
     @property
     def outline(self): return self.outline_var.get()
 
-    @background.setter
-    def background(self, value): return self.background_var.set(value)
-    @outline.setter
-    def outline(self, value): return self.outline_var.set(value)
-
-
-class ColorSpaceFrame(tkinter.LabelFrame):
-    def __init__(self, master, text, command=None):
-        super().__init__(master, text=text)
-        self.color_space_var = tkinter.StringVar(self, "HSL")
-        self.lchab_radiobutton = tkinter.Radiobutton(
-            self, text="Lab", value="Lab", variable=self.color_space_var,
-            command=command, indicatoron=0, highlightthickness=0, padx=6)
-        self.lchuv_radiobutton = tkinter.Radiobutton(
-            self, text="Luv", value="Luv", variable=self.color_space_var,
-            command=command, indicatoron=0, highlightthickness=0, padx=6)
-        self.hsl_radiobutton = tkinter.Radiobutton(
-            self, text="HSL", value="HSL", variable=self.color_space_var,
-            command=command, indicatoron=0, highlightthickness=0, padx=6)
-        self.hsv_radiobutton = tkinter.Radiobutton(
-            self, text="HSV", value="HSV", variable=self.color_space_var,
-            command=command, indicatoron=0, highlightthickness=0, padx=6)
-        self.ipt_radiobutton = tkinter.Radiobutton(
-            self, text="IPT", value="IPT", variable=self.color_space_var,
-            command=command, indicatoron=0, highlightthickness=0, padx=6)
-
-    def grid(self, *args, **kwargs):
-        super().grid(*args, **kwargs)
-        self.lchab_radiobutton.grid(row=0, column=0, padx=(15, 0),
-                                    **RADIOBUTTON_GRID)
-        self.lchuv_radiobutton.grid(row=0, column=1, **RADIOBUTTON_GRID)
-        self.hsl_radiobutton.grid(row=0, column=2, **RADIOBUTTON_GRID)
-        self.hsv_radiobutton.grid(row=0, column=3, **RADIOBUTTON_GRID)
-        self.ipt_radiobutton.grid(row=0, column=4, **RADIOBUTTON_GRID)
-
     @property
     def space(self): return self.color_space_var.get()
+
+    @background.setter
+    def background(self, value): return self.background_var.set(value)
+
+    @outline.setter
+    def outline(self, value): return self.outline_var.set(value)
 
     @space.setter
     def space(self, value): return self.color_space_var.set(value)
@@ -243,29 +234,29 @@ class DataFrame(tkinter.Frame):
         super().__init__(master)
 
         self.color_treeview = ttk.Treeview(
-            self, columns=["Color"], show="headings", height=8,
+            self, columns=["Color"], show="headings", height=10,
             selectmode="none")
         self.hexrgb_treeview = ttk.Treeview(
-            self, columns=["Hex RGB"], show="headings", height=8,
+            self, columns=["Hex RGB"], show="headings", height=10,
             selectmode="browse")
         self.hexrgba_treeview = ttk.Treeview(
-            self, columns=["Hex RGBA"], show="headings", height=8,
+            self, columns=["Hex RGBA"], show="headings", height=10,
             selectmode="browse")
         self.r_treeview = ttk.Treeview(
-            self, columns=["R"], show="headings", height=8,
+            self, columns=["R"], show="headings", height=10,
             selectmode="browse")
         self.g_treeview = ttk.Treeview(
-            self, columns=["G"], show="headings", height=8,
+            self, columns=["G"], show="headings", height=10,
             selectmode="browse")
         self.b_treeview = ttk.Treeview(
-            self, columns=["B"], show="headings", height=8,
+            self, columns=["B"], show="headings", height=10,
             selectmode="browse")
 
         measure = font.Font(master).measure
 
         M1 = measure(" Color")
-        M2 = measure(" Hex RGB")
-        M3 = measure(" Hex RGBA")
+        M2 = measure("Hex RGB")
+        M3 = measure("Hex RGBA")
         M4 = measure(" 000")
 
         self.color_treeview.column("Color", width=M1)
@@ -354,7 +345,7 @@ class DataFrame(tkinter.Frame):
     def copy_data(self, tree):
         def copy_content(event):
             item = tree.selection()[0]
-            value = tree.item(item)["values"][0]
+            value = tree.item(item, "values")[0]
             self.clipboard_clear()
             self.clipboard_append(value)
         return copy_content
@@ -388,9 +379,19 @@ class MixerFrame(tkinter.LabelFrame, SelectAfterReturn):
         self.color3_entry = tkinter.Entry(
             self, textvariable=self.color3_var, **ENTRY_MIXER)
 
-        self.color1_label = tkinter.Label(self, width=7, background="#B3B3B3")
-        self.color2_label = tkinter.Label(self, width=7, background="#B3B3B3")
-        self.color3_label = tkinter.Label(self, width=7, background="#B3B3B3")
+        self.algorithm_var = tkinter.StringVar(self, "IPT")
+        self.algorithm_label = tkinter.Label(self, text="Algoritmo")
+        self.algorithm_combo = ttk.Combobox(
+            self, textvariable=self.algorithm_var, width=7,
+            justify=tkinter.CENTER, values="Lab Luv HSL HSV IPT JCh")
+        self.algorithm_combo.bind("<<ComboboxSelected>>", self.mix_colors)
+
+        self.color1_label = tkinter.Label(
+            self, width=7, background="#B3B3B3", relief=tkinter.SUNKEN)
+        self.color2_label = tkinter.Label(
+            self, width=7, background="#B3B3B3", relief=tkinter.SUNKEN)
+        self.color3_label = tkinter.Label(
+            self, width=7, background="#B3B3B3", relief=tkinter.SUNKEN)
         self.plus_label = tkinter.Label(self, text="+")
         self.equal_label = tkinter.Label(self, text="=")
 
@@ -399,27 +400,31 @@ class MixerFrame(tkinter.LabelFrame, SelectAfterReturn):
     def grid(self, *args, **kwargs):
         super().grid(*args, **kwargs)
 
-        self.color1_entry.grid(row=0, column=0, padx=(15, 0), pady=(15, 0),
+        self.algorithm_label.grid(row=0, column=0, padx=(15, 0), pady=(15, 0))
+        self.algorithm_combo.grid(row=0, column=1, padx=15, pady=(15, 0))
+
+        self.color1_entry.grid(row=1, column=0, padx=(15, 0), pady=(15, 0),
                                ipadx=6, ipady=3)
-        self.color1_label.grid(row=0, column=1, padx=15, pady=(15, 0),
+        self.color1_label.grid(row=1, column=1, padx=15, pady=(15, 0),
                                ipadx=6, ipady=3)
 
-        self.plus_label.grid(row=1, column=0, columnspan=2)
+        self.plus_label.grid(row=2, column=0, columnspan=2)
 
-        self.color2_entry.grid(row=2, column=0, padx=(15, 0), ipadx=6, ipady=3)
-        self.color2_label.grid(row=2, column=1, padx=15, ipadx=6, ipady=3)
+        self.color2_entry.grid(row=3, column=0, padx=(15, 0), ipadx=6, ipady=3)
+        self.color2_label.grid(row=3, column=1, padx=15, ipadx=6, ipady=3)
 
-        self.equal_label.grid(row=3, column=0, columnspan=2)
+        self.equal_label.grid(row=4, column=0, columnspan=2)
 
-        self.color3_entry.grid(row=4, column=0, padx=(15, 0), pady=(0, 15),
+        self.color3_entry.grid(row=5, column=0, padx=(15, 0), pady=(0, 30),
                                ipadx=6, ipady=3)
-        self.color3_label.grid(row=4, column=1, padx=15, pady=(0, 15),
+        self.color3_label.grid(row=5, column=1, padx=15, pady=(0, 30),
                                ipadx=6, ipady=3)
 
     def mix_colors(self, event=None):
         color1 = self.color1_var.get()
         color2 = self.color2_var.get()
-        mixed_color = color.mixer["IPT"](color1, color2)
+        name = self.algorithm_var.get()
+        mixed_color = color.mixer[name](color1, color2)
         self.color3_var.set(mixed_color)
         self.color1_label.configure(background=color1)
         self.color2_label.configure(background=color2)
@@ -432,6 +437,9 @@ class MixerFrame(tkinter.LabelFrame, SelectAfterReturn):
 
         self.color2_entry.bind("<Return>", self.mix_colors)
         self.color2_entry.bind("<KP_Enter>", self.mix_colors)
+
+        self.color3_entry.bind("<Return>", self.mix_colors)
+        self.color3_entry.bind("<KP_Enter>", self.mix_colors)
 
 
 # Memory efficient history storage.
@@ -464,13 +472,13 @@ class HistoryData:
             return False
 
     def __repr__(self):
-        return (f'HistoryData(number={self.number}, '
-                f'start={self.start}, '
-                f'saturation={self.saturation}, '
-                f'luminosity={self.luminosity}, '
-                f'background={self.background}, '
-                f'color_space={self.color_space}, '
-                f'outline={self.outline})')
+        return (f"HistoryData(number={self.number}, "
+                f"start={self.start}, "
+                f"saturation={self.saturation}, "
+                f"luminosity={self.luminosity}, "
+                f"background={self.background}, "
+                f"color_space={self.color_space}, "
+                f"outline={self.outline})")
 
 
 class History(list):
@@ -489,36 +497,36 @@ class History(list):
             self.clear()
             self.extend(aux)
         else:
-            logging.error("ValueError: len(self) = %r; self.cursor = %s",
-                          len_self, self.cursor)
+            logging.error(
+                "ValueError: len(self) = %r; self.cursor = %s",
+                len_self, self.cursor)
 
     def prev(self):
         len_self = len(self)
         if len_self == 1:
-            result = self[0]
+            return self[0]
         elif len_self - 1 >= self.cursor:
             if self.cursor >= 0:
                 self.cursor -= 1
-            result = self[self.cursor]
+            return self[self.cursor]
         else:
-            logging.error("ValueError: len(self) = %r; self.cursor = %s",
-                          len_self, self.cursor)
-        return result
+            logging.error(
+                "ValueError: len(self) = %r; self.cursor = %s",
+                len_self, self.cursor)
 
     def next(self):
         len_self = len(self)
         if len_self == 1:
-            result = self[0]
+            return self[0]
         elif len_self - 1 == self.cursor:
-            result = self[self.cursor]
+            return self[self.cursor]
         elif len_self - 1 > self.cursor:
             self.cursor += 1
-            result = self[self.cursor]
+            return self[self.cursor]
         else:
             logging.error("ValueError: len(self) = %r; self.cursor = %s",
                           len_self, self.cursor)
-            result = self[-1]
-        return result
+            return self[-1]
 
 
 class File(tkinter.Frame, SelectAfterReturn):
@@ -553,8 +561,6 @@ class File(tkinter.Frame, SelectAfterReturn):
         self.settings = SettingsFrame(self, text="Ajustes de la rueda")
         self.view = ViewFrame(
             self, text="Visualización", command=self.draw_wheel)
-        self.color_space = ColorSpaceFrame(
-            self, text="Espacio de color", command=self.draw_wheel)
         self.data = DataFrame(self)
         self.mixer = MixerFrame(self, "Mezclador de colores")
 
@@ -563,9 +569,8 @@ class File(tkinter.Frame, SelectAfterReturn):
         self.canvas.grid(row=0, column=3, rowspan=5, padx=15, pady=15)
         self.settings.grid(row=0, column=0, columnspan=2, **FRAME_GRID)
         self.view.grid(row=1, column=0,  **FRAME_GRID)
-        self.color_space.grid(row=2, column=0, **FRAME_GRID)
         self.mixer.grid(row=1, column=1, rowspan=2, **FRAME_GRID)
-        self.data.grid(row=3, column=0, **FRAME_GRID)
+        self.data.grid(row=2, column=0, **FRAME_GRID)
 
     def draw_default_wheel(self, event=None):
         number = max(self.settings.number, 1)
@@ -576,7 +581,7 @@ class File(tkinter.Frame, SelectAfterReturn):
         background = self.view.background
         self.canvas.create_rectangle(0, 0, self.width, self.height,
                                      fill=background, outline=background)
-        name = self.color_space.space
+        name = self.view.space
         colors = color.space[name](start, number, saturation, luminosity)
         outline = self.view.outline
         x1, y1, x2, y2 = self.position
