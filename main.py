@@ -1,6 +1,5 @@
 import tkinter
-from tkinter import ttk
-from tkinter import filedialog, messagebox
+from tkinter import ttk, filedialog, messagebox, font
 import pathlib
 import configparser
 import itertools
@@ -32,53 +31,59 @@ def wheel_name(text):
     else:
         return "untitled-%s" % counter()
 
-
-class App(tkinter.Frame):
+class App(ttk.Frame):
     def __init__(self, root):
         super().__init__(root)
         self.root = root
         self.grid(row=0, column=0)
         self.current_directory = SETTINGS["default"]["current_directory"]
 
+        measure = font.Font(root).measure
+
+        nuevo = "%rp" % measure("nuevo")
+        abrir = "%rp" % measure("abrir")
+        guardar = "%rp" % measure("guardar")
+        guardar_como = "%rp" % measure("guardar como")
+        deshacer = "%rp" % measure("deshacer")
+        rehacer = "%rp" % measure("rehacer")
+
         # create the toolbar
-        self.toolbar = tkinter.Frame(self.root)
+        self.toolbar = ttk.Frame(self.root)
         self.toolbar.grid(row=0, column=0, sticky=tkinter.W)
 
-        self.new_button = tkinter.Button(
+        self.new_button = ttk.Button(
             self.toolbar, text="nuevo", command=self.new_wheel,
-            highlightthickness=0)
+            width=nuevo)
         self.new_button.grid(row=0, column=0)
 
-        self.open_button = tkinter.Button(
-            self.toolbar, text="abrir", highlightthickness=0,
-            command=self.open_wheel)
+        self.open_button = ttk.Button(
+            self.toolbar, text="abrir", command=self.open_wheel,
+            width=abrir)
         self.open_button.grid(row=0, column=1)
 
-        self.save_button = tkinter.Button(
-            self.toolbar, text="guardar", highlightthickness=0,
-            command=self.save_changes)
+        self.save_button = ttk.Button(
+            self.toolbar, text="guardar", command=self.save_changes,
+            width=guardar)
         self.save_button.grid(row=0, column=2)
 
-        self.save_as_button = tkinter.Button(
-            self.toolbar, text="guardar como", highlightthickness=0,
-            command=self.save_wheel)
+        self.save_as_button = ttk.Button(
+            self.toolbar, text="guardar como", command=self.save_wheel,
+            width=guardar_como)
         self.save_as_button.grid(row=0, column=3)
 
-        self.undo_button = tkinter.Button(
-            self.toolbar, text="deshacer", highlightthickness=0,
-            command=self.undo)
+        self.undo_button = ttk.Button(
+            self.toolbar, text="deshacer", command=self.undo,
+            width=deshacer)
         self.undo_button.grid(row=0, column=4)
 
-        self.redo_button = tkinter.Button(
-            self.toolbar, text="rehacer", highlightthickness=0,
-            command=self.redo)
+        self.redo_button = ttk.Button(
+            self.toolbar, text="rehacer", command=self.redo,
+            width=rehacer)
         self.redo_button.grid(row=0, column=5)
 
         # create an inner frame to center the widgets
-        padding = (0, 4, 0, 0)
         self.notebook = widgets.ClosableNotebook(
             master=self.root,
-            padding=padding,
             check_unsaved=True,
             confirm_close=lambda data: self.save_changes(index=data))
         self.notebook.grid(row=1, column=0, sticky=tkinter.W)
@@ -93,11 +98,11 @@ class App(tkinter.Frame):
     def new_wheel(self, event=None, name=None):
         tab_name = "⚫ untitled-%r" % counter() if name is None \
                    else wheel_name(name)
-        frame = tkinter.Frame(self.notebook)
+        frame = ttk.Frame(self.notebook)
         wheel = file.File(frame)
         if name is None:
             wheel.temporary_name = tab_name
-        wheel.grid(padx=0, pady=0, row=0, column=0)
+        wheel.grid(row=0, column=0)
         if name:
             wheel.file_path = str(name)
         self.notebook.add(frame, text=tab_name)
@@ -301,6 +306,4 @@ class App(tkinter.Frame):
 if __name__ == '__main__':
     root = tkinter.Tk()
     app = App(root)
-    root.config(background="#B3B3B3")
-    s = ttk.Style()
     root.mainloop()

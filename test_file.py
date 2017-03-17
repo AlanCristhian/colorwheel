@@ -4,6 +4,7 @@ import tkinter
 from tkinter import ttk
 
 import file
+import widgets
 
 
 class BaseSuite(unittest.TestCase):
@@ -41,16 +42,16 @@ class SettingsFrameSuit(BaseSuite):
         self.assertIsInstance(self.settings.number_var, tkinter.IntVar)
 
     def test_number_label(self):
-        self.assertIsInstance(self.settings.number_label, tkinter.Label)
+        self.assertIsInstance(self.settings.number_label, ttk.Label)
         self.assertEqual(self.settings.number_label["text"], "Cantidad:")
         self.assertTrue(self.settings.number_label.winfo_manager())
 
     def test_number_entry(self):
-        self.assertIsInstance(self.settings.number_entry, tkinter.Entry)
+        self.assertIsInstance(self.settings.number_entry, ttk.Entry)
         self.assertTrue(self.settings.number_entry.winfo_manager())
 
     def test_number_scale(self):
-        self.assertIsInstance(self.settings.number_scale, tkinter.Scale)
+        self.assertIsInstance(self.settings.number_scale, widgets.Scale)
         self.assertTrue(self.settings.number_scale.winfo_manager())
 
     # start
@@ -59,16 +60,16 @@ class SettingsFrameSuit(BaseSuite):
         self.assertIsInstance(self.settings.start_var, tkinter.IntVar)
 
     def test_start_label(self):
-        self.assertIsInstance(self.settings.start_label, tkinter.Label)
+        self.assertIsInstance(self.settings.start_label, ttk.Label)
         self.assertEqual(self.settings.start_label["text"], "Empezar en:")
         self.assertTrue(self.settings.start_label.winfo_manager())
 
     def test_start_entry(self):
-        self.assertIsInstance(self.settings.start_entry, tkinter.Entry)
+        self.assertIsInstance(self.settings.start_entry, ttk.Entry)
         self.assertTrue(self.settings.start_entry.winfo_manager())
 
     def test_start_scale(self):
-        self.assertIsInstance(self.settings.start_scale, tkinter.Scale)
+        self.assertIsInstance(self.settings.start_scale, widgets.Scale)
         self.assertTrue(self.settings.start_scale.winfo_manager())
 
     # saturation
@@ -77,17 +78,16 @@ class SettingsFrameSuit(BaseSuite):
         self.assertIsInstance(self.settings.saturation_var, tkinter.IntVar)
 
     def test_saturation_label(self):
-        self.assertIsInstance(self.settings.saturation_label, tkinter.Label)
-        self.assertEqual(self.settings.saturation_label["text"],
-                         "Saturación:")
+        self.assertIsInstance(self.settings.saturation_label, ttk.Label)
+        self.assertEqual(self.settings.saturation_label["text"], "Saturación:")
         self.assertTrue(self.settings.saturation_label.winfo_manager())
 
     def test_saturation_entry(self):
-        self.assertIsInstance(self.settings.saturation_entry, tkinter.Entry)
+        self.assertIsInstance(self.settings.saturation_entry, ttk.Entry)
         self.assertTrue(self.settings.saturation_entry.winfo_manager())
 
     def test_saturation_scale(self):
-        self.assertIsInstance(self.settings.saturation_scale, tkinter.Scale)
+        self.assertIsInstance(self.settings.saturation_scale, widgets.Scale)
         self.assertTrue(self.settings.saturation_scale.winfo_manager())
 
     # luminosity
@@ -96,17 +96,16 @@ class SettingsFrameSuit(BaseSuite):
         self.assertIsInstance(self.settings.luminosity_var, tkinter.IntVar)
 
     def test_luminosity_label(self):
-        self.assertIsInstance(self.settings.luminosity_label, tkinter.Label)
-        self.assertEqual(self.settings.luminosity_label["text"],
-                         "Luminosidad:")
+        self.assertIsInstance(self.settings.luminosity_label, ttk.Label)
+        self.assertEqual(self.settings.luminosity_label["text"],"Luminosidad:")
         self.assertTrue(self.settings.luminosity_label.winfo_manager())
 
     def test_luminosity_entry(self):
-        self.assertIsInstance(self.settings.luminosity_entry, tkinter.Entry)
+        self.assertIsInstance(self.settings.luminosity_entry, ttk.Entry)
         self.assertTrue(self.settings.luminosity_entry.winfo_manager())
 
     def test_luminosity_scale(self):
-        self.assertIsInstance(self.settings.luminosity_scale, tkinter.Scale)
+        self.assertIsInstance(self.settings.luminosity_scale, widgets.Scale)
         self.assertTrue(self.settings.luminosity_scale.winfo_manager())
 
 
@@ -126,7 +125,7 @@ class ViewSuite(BaseSuite):
     # view frame
 
     def test_view_frame(self):
-        self.assertIsInstance(self.view, tkinter.LabelFrame)
+        self.assertIsInstance(self.view, ttk.LabelFrame)
         self.assertEqual(self.view["text"], "Visualización")
         self.assertTrue(self.view.winfo_manager())
 
@@ -136,12 +135,12 @@ class ViewSuite(BaseSuite):
         self.assertIsInstance(self.view.background_var, tkinter.StringVar)
 
     def test_background_label(self):
-        self.assertIsInstance(self.view.background_label, tkinter.Label)
+        self.assertIsInstance(self.view.background_label, ttk.Label)
         self.assertEqual(self.view.background_label["text"], "Color de fondo:")
         self.assertTrue(self.view.background_label.winfo_manager())
 
     def test_background_entry(self):
-        self.assertIsInstance(self.view.background_entry, tkinter.Entry)
+        self.assertIsInstance(self.view.background_entry, ttk.Entry)
         self.assertTrue(self.view.background_entry.winfo_manager())
 
     # outline
@@ -150,10 +149,8 @@ class ViewSuite(BaseSuite):
         self.assertIsInstance(self.view.outline_var, tkinter.IntVar)
 
     def test_outline_checkbutton(self):
-        self.assertIsInstance(self.view.outline_checkbutton,
-                              tkinter.Checkbutton)
-        self.assertEqual(self.view.outline_checkbutton["text"],
-                         " Contorno")
+        self.assertIsInstance(self.view.outline_checkbutton, ttk.Checkbutton)
+        self.assertEqual(self.view.outline_checkbutton["text"], " Contorno")
         self.assertTrue(self.view.outline_checkbutton.winfo_manager())
 
     # color space
@@ -161,7 +158,7 @@ class ViewSuite(BaseSuite):
         self.assertIsInstance(self.view.color_space_var, tkinter.StringVar)
 
     def test_color_space_label(self):
-        self.assertIsInstance(self.view.color_space_label, tkinter.Label)
+        self.assertIsInstance(self.view.color_space_label, ttk.Label)
         self.assertEqual(self.view.color_space_label["text"],
                          "Espacio de color:")
         self.assertTrue(self.view.color_space_label.winfo_manager())
@@ -170,19 +167,6 @@ class ViewSuite(BaseSuite):
         self.assertIsInstance(self.view.color_space_combo, ttk.Combobox)
         self.assertTrue(self.view.color_space_combo.winfo_manager())
 
-
-class SpaceSuite(BaseSuite):
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-        cls.space = file.ColorSpaceFrame(cls.root, "Espacio de color")
-        cls.space.grid(row=0, column=0)
-
-    @classmethod
-    def tearDownClass(cls):
-        cls.space.destroy()
-        del cls.space
-        super().tearDownClass()
 
 class DataSuite(BaseSuite):
     @classmethod
@@ -332,7 +316,7 @@ class MixerSuite(BaseSuite):
         self.assertTrue(self.mixer.winfo_manager())
 
     def test_algorithm_label(self):
-        self.assertIsInstance(self.mixer.algorithm_label, tkinter.Label)
+        self.assertIsInstance(self.mixer.algorithm_label, ttk.Label)
         self.assertTrue(self.mixer.algorithm_label.winfo_manager())
 
     def test_algorithm_combo(self):
@@ -349,47 +333,47 @@ class MixerSuite(BaseSuite):
         self.assertIsInstance(self.mixer.color3_var, tkinter.StringVar)
 
     def test_color1_entry(self):
-        self.assertIsInstance(self.mixer.color1_entry, tkinter.Entry)
+        self.assertIsInstance(self.mixer.color1_entry, ttk.Entry)
         self.assertTrue(self.mixer.color1_entry.winfo_manager())
 
     def test_color2_entry(self):
-        self.assertIsInstance(self.mixer.color2_entry, tkinter.Entry)
+        self.assertIsInstance(self.mixer.color2_entry, ttk.Entry)
         self.assertTrue(self.mixer.color2_entry.winfo_manager())
 
     def test_color3_entry(self):
-        self.assertIsInstance(self.mixer.color3_entry, tkinter.Entry)
+        self.assertIsInstance(self.mixer.color3_entry, ttk.Entry)
         self.assertTrue(self.mixer.color3_entry.winfo_manager())
 
     def test_color1_label(self):
-        self.assertIsInstance(self.mixer.color1_label, tkinter.Label)
+        self.assertIsInstance(self.mixer.color1_label, ttk.Label)
         self.assertEqual(self.mixer.color1_label["text"], "")
         self.assertTrue(self.mixer.color1_label.winfo_manager())
 
     def test_color2_label(self):
-        self.assertIsInstance(self.mixer.color2_label, tkinter.Label)
+        self.assertIsInstance(self.mixer.color2_label, ttk.Label)
         self.assertEqual(self.mixer.color2_label["text"], "")
         self.assertTrue(self.mixer.color2_label.winfo_manager())
 
     def test_color3_label(self):
-        self.assertIsInstance(self.mixer.color3_label, tkinter.Label)
+        self.assertIsInstance(self.mixer.color3_label, ttk.Label)
         self.assertEqual(self.mixer.color3_label["text"], "")
         self.assertTrue(self.mixer.color3_label.winfo_manager())
 
     def test_plus_label(self):
-        self.assertIsInstance(self.mixer.plus_label, tkinter.Label)
+        self.assertIsInstance(self.mixer.plus_label, ttk.Label)
         self.assertEqual(self.mixer.plus_label["text"], "+")
         self.assertTrue(self.mixer.plus_label.winfo_manager())
 
     def test_equal_label(self):
-        self.assertIsInstance(self.mixer.equal_label, tkinter.Label)
+        self.assertIsInstance(self.mixer.equal_label, ttk.Label)
         self.assertEqual(self.mixer.equal_label["text"], "=")
         self.assertTrue(self.mixer.equal_label.winfo_manager())
 
-    # def test_mixer(self):
-    #     self.mixer.color1_var.set("#98c345")
-    #     self.mixer.color2_var.set("#00cb85")
-    #     self.mixer.color1_entry.event_generate("<Return>")
-    #     self.assertEqual(self.mixer.color3_var.get(), "#6dc767")
+    def test_mixer(self):
+        self.mixer.color1_var.set("#98c345")
+        self.mixer.color2_var.set("#00cb85")
+        self.mixer.mix_colors()
+        self.assertEqual(self.mixer.color3_var.get(), "#6dc767")
 
 
 class FileSuite(BaseSuite):
@@ -410,7 +394,7 @@ class FileSuite(BaseSuite):
         self.assertTrue(self.app.canvas.winfo_manager())
 
     def test_wheel_settings(self):
-        self.assertIsInstance(self.app.settings, tkinter.LabelFrame)
+        self.assertIsInstance(self.app.settings, ttk.LabelFrame)
         self.assertEqual(self.app.settings["text"],
                          "Ajustes de la rueda")
         self.assertTrue(self.app.settings.winfo_manager())

@@ -4,55 +4,24 @@ from math import sqrt
 import color
 import logging
 
+import widgets
+
 logging.basicConfig(filename="color_wheel.log", level=logging.ERROR)
 
 
-
-GRID_DIMENSIONS = {
-    "sticky": tkinter.E,
-    "padx": (15, 0),
-}
-VIEW_GRID = {
-    **GRID_DIMENSIONS,
-    "pady": (15, 0),
-}
-VIEW_GRID_BOTTOM = {
-    **GRID_DIMENSIONS,
-    "pady": 15,
-}
-ENTRY_GRID = {
-    "padx": 0,
-    "ipady": 3,
-    "ipadx": 6,
-}
-ENTRY_SETTINGS = {
-    "width": 3,
-    "justify": tkinter.CENTER,
-}
 SCALE_360 = {
     "from_": 0,
     "to": 360,
     "length": 360,
-    "tickinterval": 45,
+    # "tickinterval": 45,
     "orient": tkinter.HORIZONTAL,
 }
 SCALE_100 = {
     "from_": 0,
     "to": 100,
     "length": 360,
-    "tickinterval": 10,
+    # "tickinterval": 10,
     "orient": tkinter.HORIZONTAL,
-}
-FRAME_GRID = {
-    "sticky": tkinter.NSEW,
-    "padx": (15, 0),
-    "pady": (15, 0),
-    "ipadx":0,
-}
-RADIOBUTTON_GRID = {
-    "ipadx": 6,
-    "ipady": 3,
-    "pady": (15, 7)
 }
 VOID = [""]
 NORTH_SOUTH = tkinter.N + tkinter.S
@@ -61,45 +30,44 @@ NORTH_SOUTH = tkinter.N + tkinter.S
 class SelectAfterReturn:
     def select_changed_value(self):
         widget = self.root.focus_get()
-        if isinstance(widget, tkinter.Entry):
+        if isinstance(widget, ttk.Entry):
            index = len(widget.get())
            widget.select_range(0, index)
 
 
-class SettingsFrame(tkinter.LabelFrame):
+class SettingsFrame(ttk.LabelFrame):
     def __init__(self, master, text):
         super().__init__(master, text=text)
 
         # number
         self.number_var = tkinter.IntVar(self, 360)
-        self.number_label = tkinter.Label(self, text="Cantidad:")
-        self.number_entry = tkinter.Entry(
-            self, textvariable=self.number_var, **ENTRY_SETTINGS)
-        self.number_scale = tkinter.Scale(
+        self.number_label = ttk.Label(self, text="Cantidad:")
+        self.number_entry = ttk.Entry(self, textvariable=self.number_var)
+        self.number_scale = widgets.Scale(
             self, variable=self.number_var, **SCALE_360)
 
         # start
         self.start_var = tkinter.IntVar(self, 0)
-        self.start_label = tkinter.Label(self, text="Empezar en:")
-        self.start_entry = tkinter.Entry(
-            self, textvariable=self.start_var, **ENTRY_SETTINGS)
-        self.start_scale = tkinter.Scale(
-            self, variable=self.start_var, **SCALE_360  )
+        self.start_label = ttk.Label(self, text="Empezar en:")
+        self.start_entry = ttk.Entry(
+            self, textvariable=self.start_var)
+        self.start_scale = widgets.Scale(
+            self, variable=self.start_var, **SCALE_360)
 
         # saturation
         self.saturation_var = tkinter.IntVar(self, 50)
-        self.saturation_label = tkinter.Label(self, text="Saturación:")
-        self.saturation_entry = tkinter.Entry(
-            self, textvariable=self.saturation_var, **ENTRY_SETTINGS)
-        self.saturation_scale = tkinter.Scale(
+        self.saturation_label = ttk.Label(self, text="Saturación:")
+        self.saturation_entry = ttk.Entry(
+            self, textvariable=self.saturation_var)
+        self.saturation_scale = widgets.Scale(
             self, variable=self.saturation_var, **SCALE_100)
 
         # luminosity
         self.luminosity_var = tkinter.IntVar(self, 50)
-        self.luminosity_label = tkinter.Label(self, text="Luminosidad:")
-        self.luminosity_entry = tkinter.Entry(
-            self, textvariable=self.luminosity_var, **ENTRY_SETTINGS)
-        self.luminosity_scale = tkinter.Scale(
+        self.luminosity_label = ttk.Label(self, text="Luminosidad:")
+        self.luminosity_entry = ttk.Entry(
+            self, textvariable=self.luminosity_var)
+        self.luminosity_scale = widgets.Scale(
             self, variable=self.luminosity_var, **SCALE_100)
 
         self.set_events()
@@ -118,24 +86,24 @@ class SettingsFrame(tkinter.LabelFrame):
         super().grid(*args, **kwargs)
 
         # number
-        self.number_label.grid(row=0, column=0, **GRID_DIMENSIONS)
-        self.number_entry.grid(row=0, column=1, **ENTRY_GRID)
-        self.number_scale.grid(row=0, column=2, **GRID_DIMENSIONS)
+        self.number_label.grid(row=0, column=0)
+        self.number_entry.grid(row=0, column=1)
+        self.number_scale.grid(row=0, column=2)
 
         # start
-        self.start_label.grid(row=1, column=0, **GRID_DIMENSIONS)
-        self.start_entry.grid(row=1, column=1, **ENTRY_GRID)
-        self.start_scale.grid(row=1, column=2, **GRID_DIMENSIONS)
+        self.start_label.grid(row=1, column=0)
+        self.start_entry.grid(row=1, column=1)
+        self.start_scale.grid(row=1, column=2)
 
         # Saturation
-        self.saturation_label.grid(row=2, column=0, **GRID_DIMENSIONS)
-        self.saturation_entry.grid(row=2, column=1, **ENTRY_GRID)
-        self.saturation_scale.grid(row=2, column=2, **GRID_DIMENSIONS)
+        self.saturation_label.grid(row=2, column=0)
+        self.saturation_entry.grid(row=2, column=1)
+        self.saturation_scale.grid(row=2, column=2)
 
         # luminosity
-        self.luminosity_label.grid(row=3, column=0, **GRID_DIMENSIONS)
-        self.luminosity_entry.grid(row=3, column=1, **ENTRY_GRID)
-        self.luminosity_scale.grid(row=3, column=2, **GRID_DIMENSIONS)
+        self.luminosity_label.grid(row=3, column=0)
+        self.luminosity_entry.grid(row=3, column=1)
+        self.luminosity_scale.grid(row=3, column=2)
 
     def set_events(self):
         increment_number_var = self.incrementer(self.number_var)
@@ -175,40 +143,37 @@ class SettingsFrame(tkinter.LabelFrame):
     def luminosity(self, value): return self.luminosity_var.set(value)
 
 
-class ViewFrame(tkinter.LabelFrame):
+class ViewFrame(ttk.LabelFrame):
     def __init__(self, master, text, command=None):
         super().__init__(master, text=text)
 
         # background
         self.background_var = tkinter.StringVar(self, "gray20")
-        self.background_label = tkinter.Label(self, text="Color de fondo:")
-        self.background_entry = tkinter.Entry(
-            self, textvariable=self.background_var, width=7,
-            justify=tkinter.CENTER)
+        self.background_label = ttk.Label(self, text="Color de fondo:")
+        self.background_entry = ttk.Entry(
+            self, textvariable=self.background_var)
 
         # outline
         self.outline_var = tkinter.IntVar(self)
-        self.outline_checkbutton = tkinter.Checkbutton(
+        self.outline_checkbutton = ttk.Checkbutton(
             self, text=" Contorno",
             variable=self.outline_var, command=command)
 
         # color space
         self.color_space_var = tkinter.StringVar(self, "HSL")
-        self.color_space_label = tkinter.Label(self, text="Espacio de color:")
+        self.color_space_label = ttk.Label(self, text="Espacio de color:")
         self.color_space_combo = ttk.Combobox(
-            self, textvariable=self.color_space_var, width=7,
-            justify=tkinter.CENTER,
+            self, textvariable=self.color_space_var,
             values="Lab Luv HSL HSV IPT JCh")
         self.color_space_combo.bind("<<ComboboxSelected>>", command)
 
     def grid(self, *args, **kwargs):
         super().grid(*args, **kwargs)
-        self.background_label.grid(row=0, column=0, **VIEW_GRID)
-        self.background_entry.grid(row=0, column=1, pady=(15, 0),
-                                   **{**ENTRY_GRID, "padx": (15, 0)})
-        self.outline_checkbutton.grid(row=0, column=2, **VIEW_GRID_BOTTOM)
-        self.color_space_label.grid(row=1, column=0, **VIEW_GRID_BOTTOM)
-        self.color_space_combo.grid(row=1, column=1, **VIEW_GRID_BOTTOM)
+        self.background_label.grid(row=0, column=0)
+        self.background_entry.grid(row=0, column=1)
+        self.outline_checkbutton.grid(row=0, column=2)
+        self.color_space_label.grid(row=1, column=0)
+        self.color_space_combo.grid(row=1, column=1)
 
     @property
     def background(self): return self.background_var.get()
@@ -229,28 +194,23 @@ class ViewFrame(tkinter.LabelFrame):
     def space(self, value): return self.color_space_var.set(value)
 
 
-class DataFrame(tkinter.Frame):
+class DataFrame(ttk.Frame):
     def __init__(self, master):
         super().__init__(master)
+        _TREEVIEW_SETTINGS = {"show": "headings", "selectmode":"none"}
 
         self.color_treeview = ttk.Treeview(
-            self, columns=["Color"], show="headings", height=10,
-            selectmode="none")
+            self, columns=["Color"], **_TREEVIEW_SETTINGS)
         self.hexrgb_treeview = ttk.Treeview(
-            self, columns=["Hex RGB"], show="headings", height=10,
-            selectmode="browse")
+            self, columns=["Hex RGB"], **_TREEVIEW_SETTINGS)
         self.hexrgba_treeview = ttk.Treeview(
-            self, columns=["Hex RGBA"], show="headings", height=10,
-            selectmode="browse")
+            self, columns=["Hex RGBA"], **_TREEVIEW_SETTINGS)
         self.r_treeview = ttk.Treeview(
-            self, columns=["R"], show="headings", height=10,
-            selectmode="browse")
+            self, columns=["R"], **_TREEVIEW_SETTINGS)
         self.g_treeview = ttk.Treeview(
-            self, columns=["G"], show="headings", height=10,
-            selectmode="browse")
+            self, columns=["G"], **_TREEVIEW_SETTINGS)
         self.b_treeview = ttk.Treeview(
-            self, columns=["B"], show="headings", height=10,
-            selectmode="browse")
+            self, columns=["B"], **_TREEVIEW_SETTINGS)
 
         measure = font.Font(master).measure
 
@@ -275,7 +235,7 @@ class DataFrame(tkinter.Frame):
         self.b_treeview.column("B", width=M4)
         self.b_treeview.heading("B", text="B")
 
-        self.scroll = tkinter.Scrollbar(self)
+        self.scroll = ttk.Scrollbar(self)
         self.scroll.configure(command=self.set_yview)
 
         self.color_treeview.configure(
@@ -358,67 +318,55 @@ class DataFrame(tkinter.Frame):
         self.b_treeview.bind("<Double-Button-1>", self.copy_b_data)
 
 
-class MixerFrame(tkinter.LabelFrame, SelectAfterReturn):
+class MixerFrame(ttk.LabelFrame, SelectAfterReturn):
     def __init__(self, master, text):
         super().__init__(master, text=text)
         self.root = master
 
-        ENTRY_MIXER = {
-            "justify": tkinter.CENTER,
-            "width" : 7,
-        }
+        self.color1_var = tkinter.StringVar(self, "#b3b3b3")
+        self.color2_var = tkinter.StringVar(self, "#b3b3b3")
+        self.color3_var = tkinter.StringVar(self, "#b3b3b3")
 
-        self.color1_var = tkinter.StringVar(self, "#B3B3B3")
-        self.color2_var = tkinter.StringVar(self, "#B3B3B3")
-        self.color3_var = tkinter.StringVar(self, "#B3B3B3")
-
-        self.color1_entry = tkinter.Entry(
-            self, textvariable=self.color1_var, **ENTRY_MIXER)
-        self.color2_entry = tkinter.Entry(
-            self, textvariable=self.color2_var, **ENTRY_MIXER)
-        self.color3_entry = tkinter.Entry(
-            self, textvariable=self.color3_var, **ENTRY_MIXER)
+        self.color1_entry = ttk.Entry(self, textvariable=self.color1_var)
+        self.color2_entry = ttk.Entry(self, textvariable=self.color2_var)
+        self.color3_entry = ttk.Entry(self, textvariable=self.color3_var)
 
         self.algorithm_var = tkinter.StringVar(self, "IPT")
-        self.algorithm_label = tkinter.Label(self, text="Algoritmo")
+        self.algorithm_label = ttk.Label(self, text="Algoritmo")
         self.algorithm_combo = ttk.Combobox(
-            self, textvariable=self.algorithm_var, width=7,
-            justify=tkinter.CENTER, values="Lab Luv HSL HSV IPT JCh")
+            self, textvariable=self.algorithm_var,
+            values="Lab Luv HSL HSV IPT JCh")
         self.algorithm_combo.bind("<<ComboboxSelected>>", self.mix_colors)
 
-        self.color1_label = tkinter.Label(
-            self, width=7, background="#B3B3B3", relief=tkinter.SUNKEN)
-        self.color2_label = tkinter.Label(
-            self, width=7, background="#B3B3B3", relief=tkinter.SUNKEN)
-        self.color3_label = tkinter.Label(
-            self, width=7, background="#B3B3B3", relief=tkinter.SUNKEN)
-        self.plus_label = tkinter.Label(self, text="+")
-        self.equal_label = tkinter.Label(self, text="=")
+        self.color1_label = ttk.Label(
+            self, width=7, background="#b3b3b3", relief=tkinter.SUNKEN)
+        self.color2_label = ttk.Label(
+            self, width=7, background="#b3b3b3", relief=tkinter.SUNKEN)
+        self.color3_label = ttk.Label(
+            self, width=7, background="#b3b3b3", relief=tkinter.SUNKEN)
+        self.plus_label = ttk.Label(self, text="+")
+        self.equal_label = ttk.Label(self, text="=")
 
         self.set_events()
 
     def grid(self, *args, **kwargs):
         super().grid(*args, **kwargs)
 
-        self.algorithm_label.grid(row=0, column=0, padx=(15, 0), pady=(15, 0))
-        self.algorithm_combo.grid(row=0, column=1, padx=15, pady=(15, 0))
+        self.algorithm_label.grid(row=0, column=0)
+        self.algorithm_combo.grid(row=0, column=1)
 
-        self.color1_entry.grid(row=1, column=0, padx=(15, 0), pady=(15, 0),
-                               ipadx=6, ipady=3)
-        self.color1_label.grid(row=1, column=1, padx=15, pady=(15, 0),
-                               ipadx=6, ipady=3)
+        self.color1_entry.grid(row=1, column=0)
+        self.color1_label.grid(row=1, column=1)
 
         self.plus_label.grid(row=2, column=0, columnspan=2)
 
-        self.color2_entry.grid(row=3, column=0, padx=(15, 0), ipadx=6, ipady=3)
-        self.color2_label.grid(row=3, column=1, padx=15, ipadx=6, ipady=3)
+        self.color2_entry.grid(row=3, column=0)
+        self.color2_label.grid(row=3, column=1)
 
         self.equal_label.grid(row=4, column=0, columnspan=2)
 
-        self.color3_entry.grid(row=5, column=0, padx=(15, 0), pady=(0, 30),
-                               ipadx=6, ipady=3)
-        self.color3_label.grid(row=5, column=1, padx=15, pady=(0, 30),
-                               ipadx=6, ipady=3)
+        self.color3_entry.grid(row=5, column=0)
+        self.color3_label.grid(row=5, column=1)
 
     def mix_colors(self, event=None):
         color1 = self.color1_var.get()
@@ -529,7 +477,7 @@ class History(list):
             return self[-1]
 
 
-class File(tkinter.Frame, SelectAfterReturn):
+class File(ttk.Frame, SelectAfterReturn):
     def __init__(self, root, ):
         super().__init__(root)
         self.root = root
@@ -566,11 +514,11 @@ class File(tkinter.Frame, SelectAfterReturn):
 
     def grid(self, *args, **kwargs):
         super().grid(*args, **kwargs)
-        self.canvas.grid(row=0, column=3, rowspan=5, padx=15, pady=15)
-        self.settings.grid(row=0, column=0, columnspan=2, **FRAME_GRID)
-        self.view.grid(row=1, column=0,  **FRAME_GRID)
-        self.mixer.grid(row=1, column=1, rowspan=2, **FRAME_GRID)
-        self.data.grid(row=2, column=0, **FRAME_GRID)
+        self.canvas.grid(row=0, column=3, rowspan=3)
+        self.settings.grid(row=0, column=0, columnspan=2)
+        self.view.grid(row=1, column=0)
+        self.mixer.grid(row=1, column=1, rowspan=2)
+        self.data.grid(row=2, column=0)
 
     def draw_default_wheel(self, event=None):
         number = max(self.settings.number, 1)

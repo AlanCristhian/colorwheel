@@ -3,14 +3,14 @@ import _tkinter
 from tkinter import ttk, messagebox
 
 
-def update_title(self, wheel):
+def update_title(self, frame):
     parent = self.master
     while True:
         child = parent
         parent = parent.master
         if parent is None:
-            child.title(wheel.file_path if wheel.file_path
-                        else wheel.temporary_name)
+            child.title(frame.file_path if frame.file_path
+                        else frame.temporary_name)
             break
 
 
@@ -20,6 +20,9 @@ def _in(a, b):
 
 def _not_in(a, b):
     return a not in b
+
+class Scale(ttk.Scale):
+    pass
 
 
 class ClosableNotebook(ttk.Notebook):
@@ -33,7 +36,7 @@ class ClosableNotebook(ttk.Notebook):
             self.__initialize_custom_style()
             self.__inititialized = True
 
-        kwargs["style"] = "ClosableNotebook"
+        kwargs["style"] = "TNotebook"
         super().__init__(*args, **kwargs)
 
         self._active = None
@@ -65,7 +68,7 @@ class ClosableNotebook(ttk.Notebook):
                 wheel = frame.winfo_children()[0]
                 update_title(self, wheel)
             except _tkinter.TclError as error:
-                if error.args != ('Invalid slave specification ',):
+                if error.args != ("Invalid slave specification ",):
                     raise
 
     def confirm_close(self, data):
@@ -111,13 +114,11 @@ class ClosableNotebook(ttk.Notebook):
                             detail="Si cierra sin guardar se "
                                    "perderán los cambios realizados",
                             icon="warning")
-                        if response is None:
-                            pass
-                        elif response is True:
+                        if response is True:
                             self.confirm_close(data=index)
                             self.forget(index)
                             self.event_generate("<<NotebookTabClosed>>")
-                        else:
+                        elif response is False:
                             self.forget(index)
                             self.event_generate("<<NotebookTabClosed>>")
             else:
@@ -131,37 +132,27 @@ class ClosableNotebook(ttk.Notebook):
 
     def __initialize_custom_style(self):
         style = ttk.Style()
+
         self.images = (
             tkinter.PhotoImage("img_close", file="close.png"),
             tkinter.PhotoImage("img_closeactive", file="active.png"),
-            tkinter.PhotoImage("img_closepressed", file="pressed.png")
-        )
+            tkinter.PhotoImage("img_closepressed", file="pressed.png"))
 
-        style.element_create("close", "image", "img_close",
-                            ("pressed", "active", "!disabled", "img_closepressed"),
-                            ("active", "!disabled", "img_closeactive"), border=8, sticky='')
-        style.layout("ClosableNotebook", [("ClosableNotebook.client", {"sticky": "nswe"})])
-        style.layout("ClosableNotebook.Tab", [
-            ("ClosableNotebook.tab", {
-                "sticky": "nswe",
-                "children": [
-                    ("ClosableNotebook.padding", {
-                        "side": "top",
-                        "sticky": "nswe",
-                        "children": [
-                            ("ClosableNotebook.focus", {
-                                "side": "top",
-                                "sticky": "nswe",
-                                "children": [
-                                    ("ClosableNotebook.label", {"side": "left", "sticky": ''}),
-                                    ("ClosableNotebook.close", {"side": "left", "sticky": ''}),
-                                    ]
-                            })
-                        ]
-                    })
-                ]
-            })
-        ])
-        style.configure("ClosableNotebook.Tab", padding=(10, 3))
-        style.configure("ClosableNotebook", background="#B3B3B3")
+        style.element_create(
+            "close", "image", "img_close",
+            ("pressed", "active", "!disabled", "img_closepressed"),
+            ("active", "!disabled", "img_closeactive"),
+            border=8, sticky="")
+
+        # notebook_layout = style.layout("TNotebook").copy()
+        # style.layout("TNotebook", notebook_layout)
+
+        tab_layout = style.layout("TNotebook.Tab").copy()
+
+        ans = [("Notebook.label", {"side": "left", "sticky": ""}),
+               ("Notebook.close", {"side": "left", "sticky": ""})]
+
+        tab_layout[0][1]["children"][0][1]["children"][0][1]["children"] = ans
+
+        style.layout("TNotebook.Tab", tab_layout)
 
