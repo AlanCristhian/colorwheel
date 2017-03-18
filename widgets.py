@@ -45,7 +45,7 @@ class ClosableNotebook(ttk.Notebook):
 
         self.bind(
             "<ButtonPress-2>",
-            self._create_press_command("close", not_=True),
+            self.create_press_command("close", not_=True),
             True)
         self.bind(
             "<ButtonRelease-2>",
