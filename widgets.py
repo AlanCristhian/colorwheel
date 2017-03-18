@@ -149,7 +149,8 @@ class ClosableNotebook(ttk.Notebook):
 
         # Copy the configuration of the current theme
         notebook_cfg = style.configure("TNotebook")
-        style.configure("ClosableNotebook", **notebook_cfg if notebook_cfg else {})
+        style.configure(
+            "ClosableNotebook", **notebook_cfg if notebook_cfg else {})
         tab_cfg = style.configure("TNotebook.Tab").copy()
         style.configure("ClosableNotebook.Tab", **tab_cfg)
 
@@ -162,7 +163,6 @@ class ClosableNotebook(ttk.Notebook):
                 style.map("ClosableNotebook.Tab", notebook_map)
             else:
                 raise
-
 
         # Copy the layout of the current theme
         tab_layout = style.layout("TNotebook.Tab").copy()

@@ -511,8 +511,8 @@ class History(list):
 
 
 class File(ttk.Frame, SelectAfterReturn):
-    def __init__(self, root):
-        super().__init__(root)
+    def __init__(self, master):
+        super().__init__(master)
         self.default_sizes = True
         self.file_path = ""
         self.temporary_name = None
@@ -630,7 +630,7 @@ class File(ttk.Frame, SelectAfterReturn):
 
 
 if __name__ == '__main__':
-    root = tk.Tk()
-    file = File(root)
+    master = tk.Tk()
+    file = File(master)
     file.grid(padx=0, pady=0, row=0, column=0)
-    root.mainloop()
+    master.mainloop()
