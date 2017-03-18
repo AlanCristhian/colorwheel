@@ -1,5 +1,4 @@
 import unittest
-from unittest import mock
 import tkinter
 from tkinter import ttk
 
