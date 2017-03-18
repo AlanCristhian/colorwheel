@@ -97,16 +97,15 @@ class App(ttk.Frame):
     def new_wheel(self, event=None, name=None):
         tab_name = "⚫ untitled-%r" % COUNTER() if name is None \
                    else wheel_name(name)
-        frame = ttk.Frame(self.notebook)
-        wheel = file.File(frame)
+        wheel = file.File(self.notebook)
         if name is None:
             wheel.temporary_name = tab_name
         wheel.grid(row=0, column=0)
         if name:
             wheel.file_path = str(name)
-        self.notebook.add(frame, text=tab_name)
+        self.notebook.add(wheel, text=tab_name)
         # set the focus in the new tab
-        self.notebook.select(frame)
+        self.notebook.select(wheel)
         wheel.draw_default_wheel()
         wheel.saved = False
         widgets.update_title(self, wheel)
@@ -118,8 +117,7 @@ class App(ttk.Frame):
             tab_id = self.notebook.select()
             index = self.notebook.index(tab_id)
         key = self.notebook.tabs()[index].split(".")[2]
-        frame = self.notebook.children[key]
-        return frame.winfo_children()[0], tab_id
+        return self.notebook.children[key], tab_id
 
     def save_changes(self, event=None, index=None):
         wheel, tab_id = self.get_wheel_and_tab_id(index)
@@ -243,8 +241,7 @@ class App(ttk.Frame):
         opened = []
         for tab in self.notebook.tabs():
             key = tab.split(".")[2]
-            frame = self.notebook.children[key]
-            wheel = frame.winfo_children()[0]
+            wheel = self.notebook.children[key]
             wheel.focus_set()
             tab_id = self.notebook.select()
             index = self.notebook.index(tab_id)

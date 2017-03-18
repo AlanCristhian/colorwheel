@@ -40,16 +40,16 @@ class ClosableNotebook(ttk.Notebook):
         self._check_unsaved = check_unsaved
         self._confirm_close = confirm_close
 
-        self.bind("<ButtonPress-1>", self.close_press_command("close"), True)
-        self.bind("<ButtonRelease-1>", self.close_release_command("close"))
+        self.bind("<ButtonPress-1>", self.create_press_command("close"), True)
+        self.bind("<ButtonRelease-1>", self.create_release_command("close"))
 
         self.bind(
             "<ButtonPress-2>",
-            self.close_press_command("close", not_=True),
+            self._create_press_command("close", not_=True),
             True)
         self.bind(
             "<ButtonRelease-2>",
-            self.close_release_command("close", not_=True),
+            self.create_release_command("close", not_=True),
             True)
 
         self.bind("<ButtonRelease-1>", self.on_tab_focus, True)
@@ -61,8 +61,7 @@ class ClosableNotebook(ttk.Notebook):
             try:
                 index = self.index(tab_id)
                 key = self.tabs()[index].split(".")[2]
-                frame = self.children[key]
-                wheel = frame.winfo_children()[0]
+                wheel = self.children[key]
                 update_title(self, wheel)
             except _tkinter.TclError as error:
                 if error.args != ("Invalid slave specification ",):
@@ -72,7 +71,7 @@ class ClosableNotebook(ttk.Notebook):
         if self._confirm_close:
             self._confirm_close(data)
 
-    def close_press_command(self, obj, not_=False):
+    def create_press_command(self, obj, not_=False):
         def on_close_press(event):
             """Called when the button is pressed over the close button"""
             element = self.identify(event.x, event.y)
@@ -83,7 +82,7 @@ class ClosableNotebook(ttk.Notebook):
                 self._active = index
         return on_close_press
 
-    def close_release_command(self, obj, not_=False):
+    def create_release_command(self, obj, not_=False):
         def on_close_release(event):
             """Called when the button is released over the close button"""
             if not self.instate(["pressed"]):
@@ -96,8 +95,7 @@ class ClosableNotebook(ttk.Notebook):
                 check = _not_in if not_ else _in
                 if check(obj, element) and self._active == index:
                     key = self.tabs()[index].split(".")[2]
-                    frame = self.children[key]
-                    wheel = frame.winfo_children()[0]
+                    wheel = self.children[key]
                     if wheel.saved:
                         self.forget(index)
                         self.event_generate("<<NotebookTabClosed>>")
