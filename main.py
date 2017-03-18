@@ -32,13 +32,12 @@ def wheel_name(text):
 
 
 class App(ttk.Frame):
-    def __init__(self, root):
-        super().__init__(root)
-        self.root = root
+    def __init__(self, master):
+        super().__init__(master)
         self.grid(row=0, column=0)
         self.current_directory = SETTINGS["default"]["current_directory"]
 
-        measure = font.Font(root).measure
+        measure = font.Font(master).measure
 
         nuevo = "%rp" % measure("nuevo")
         abrir = "%rp" % measure("abrir")
@@ -48,7 +47,7 @@ class App(ttk.Frame):
         rehacer = "%rp" % measure("rehacer")
 
         # create the toolbar
-        self.toolbar = ttk.Frame(self.root)
+        self.toolbar = ttk.Frame(self.master)
         self.toolbar.grid(row=0, column=0, sticky=tkinter.W)
 
         self.new_button = ttk.Button(
@@ -83,7 +82,7 @@ class App(ttk.Frame):
 
         # create an inner frame to center the widgets
         self.notebook = widgets.ClosableNotebook(
-            master=self.root,
+            master=self.master,
             check_unsaved=True,
             confirm_close=lambda data: self.save_changes(index=data))
         self.notebook.grid(row=1, column=0, sticky=tkinter.W, **TOOLBAR_IPAD)
@@ -273,7 +272,7 @@ class App(ttk.Frame):
 
             with open(BASE/".config", "w") as settings_file:
                 SETTINGS.write(settings_file)
-            self.root.destroy()
+            self.master.destroy()
 
     def mark_as_unsaved(self, event):
         if not event.widget.saved:
@@ -284,30 +283,30 @@ class App(ttk.Frame):
                     self.notebook.tab(tab_id, text="⚫ " + text)
 
     def set_events(self):
-        self.root.bind("<Control-o>", self.open_wheel)
-        self.root.bind("<Control-n>", self.new_wheel)
-        self.root.bind("<Control-s>", self.save_changes)
-        self.root.bind("<Control-Shift-Key-S>", self.save_wheel)
-        self.root.bind("<Control-Key-z>", self.undo)
-        self.root.bind("<Control-Shift-Key-Z>", self.redo)
-        self.root.bind("<Control-Key-y>", self.redo)
-        self.root.protocol("WM_DELETE_WINDOW", self.save_config)
-        if self.root._windowingsystem == 'x11':
+        self.master.bind("<Control-o>", self.open_wheel)
+        self.master.bind("<Control-n>", self.new_wheel)
+        self.master.bind("<Control-s>", self.save_changes)
+        self.master.bind("<Control-Shift-Key-S>", self.save_wheel)
+        self.master.bind("<Control-Key-z>", self.undo)
+        self.master.bind("<Control-Shift-Key-Z>", self.redo)
+        self.master.bind("<Control-Key-y>", self.redo)
+        self.master.protocol("WM_DELETE_WINDOW", self.save_config)
+        if self.master._windowingsystem == 'x11':
             # Pasting from the clipboard doesn't delete the current selection
             # on X11.
             # See issue #5124.
             for cls in 'Text', 'Entry', 'Spinbox':
-                self.root.bind_class(cls, '<<Paste>>',
+                self.master.bind_class(cls, '<<Paste>>',
                                 'catch {%W delete sel.first sel.last}\n' +
-                                self.root.bind_class(cls, '<<Paste>>'))
-        self.root.bind("<<WheelDrawed>>", self.mark_as_unsaved)
+                                self.master.bind_class(cls, '<<Paste>>'))
+        self.master.bind("<<WheelDrawed>>", self.mark_as_unsaved)
 
 
 if __name__ == '__main__':
-    root = tkinter.Tk()
+    master = tkinter.Tk()
 
     style = ttk.Style()
     style.configure("ClosableNotebook.Tab", padding=(10, 3))
 
-    app = App(root)
-    root.mainloop()
+    app = App(master)
+    master.mainloop()

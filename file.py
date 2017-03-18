@@ -42,7 +42,7 @@ IPAD = {"ipadx": 0.5*em, "ipady": 0.25*em}
 
 class SelectAfterReturn:
     def select_changed_value(self):
-        widget = self.root.focus_get()
+        widget = self.master.focus_get()
         if isinstance(widget, ttk.Entry):
            index = len(widget.get())
            widget.select_range(0, index)
@@ -345,7 +345,6 @@ class DataFrame(ttk.Frame):
 class MixerFrame(ttk.LabelFrame, SelectAfterReturn):
     def __init__(self, master, text):
         super().__init__(master, text=text)
-        self.root = master
 
         self.color1_var = tk.StringVar(self, "#b3b3b3")
         self.color2_var = tk.StringVar(self, "#b3b3b3")
@@ -512,9 +511,8 @@ class History(list):
 
 
 class File(ttk.Frame, SelectAfterReturn):
-    def __init__(self, root, ):
+    def __init__(self, root):
         super().__init__(root)
-        self.root = root
         self.default_sizes = True
         self.file_path = ""
         self.temporary_name = None
