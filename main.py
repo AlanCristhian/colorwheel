@@ -48,7 +48,7 @@ class App(ttk.Frame):
         rehacer = "%rp" % measure("rehacer")
 
         # create the toolbar
-        self.toolbar = toolbar.ToolBar(self.master, compound=tk.LEFT)
+        self.toolbar = toolbar.ToolBar(self.master)
         self.toolbar.append(
             name="new", label="Nuevo", command=self.new_wheel,
             image="new.png")
