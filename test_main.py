@@ -29,38 +29,6 @@ class MainWidgetsSuite(BaseSuite):
         self.assertTrue(self.app.winfo_manager())
 
 
-class ToolbarSuite(BaseSuite):
-    def test_toolbar_property(self):
-        self.assertIsInstance(self.app.toolbar, ttk.Frame)
-
-    def test_that_toolbar_is_visible(self):
-        self.assertTrue(self.app.toolbar.winfo_manager())
-
-    def test_new_button(self):
-        self.assertIsInstance(self.app.new_button, ttk.Button)
-        self.assertTrue(self.app.new_button.winfo_manager())
-
-    def test_open_button(self):
-        self.assertIsInstance(self.app.open_button, ttk.Button)
-        self.assertTrue(self.app.open_button.winfo_manager())
-
-    def test_save_button(self):
-        self.assertIsInstance(self.app.save_button, ttk.Button)
-        self.assertTrue(self.app.save_button.winfo_manager())
-
-    def test_save_as_button(self):
-        self.assertIsInstance(self.app.save_as_button, ttk.Button)
-        self.assertTrue(self.app.save_as_button.winfo_manager())
-
-    def test_undo_button(self):
-        self.assertIsInstance(self.app.undo_button, ttk.Button)
-        self.assertTrue(self.app.undo_button.winfo_manager())
-
-    def test_redo_button(self):
-        self.assertIsInstance(self.app.redo_button, ttk.Button)
-        self.assertTrue(self.app.redo_button.winfo_manager())
-
-
 class GlobalEventsSuite(BaseSuite):
     @classmethod
     def setUpClass(cls):

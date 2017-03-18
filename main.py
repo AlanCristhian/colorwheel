@@ -1,4 +1,4 @@
-import tkinter
+import tkinter as tk
 from tkinter import ttk, filedialog, messagebox, font
 import pathlib
 import configparser
@@ -6,6 +6,7 @@ import itertools
 
 import widgets
 import file
+import toolbar
 
 
 TOOLBAR_IPAD = {"ipadx": file.IPAD["ipadx"],
@@ -47,45 +48,33 @@ class App(ttk.Frame):
         rehacer = "%rp" % measure("rehacer")
 
         # create the toolbar
-        self.toolbar = ttk.Frame(self.master)
-        self.toolbar.grid(row=0, column=0, sticky=tkinter.W)
-
-        self.new_button = ttk.Button(
-            self.toolbar, text="nuevo", command=self.new_wheel,
-            width=nuevo)
-        self.new_button.grid(row=0, column=0, **TOOLBAR_IPAD)
-
-        self.open_button = ttk.Button(
-            self.toolbar, text="abrir", command=self.open_wheel,
-            width=abrir)
-        self.open_button.grid(row=0, column=1, **TOOLBAR_IPAD)
-
-        self.save_button = ttk.Button(
-            self.toolbar, text="guardar", command=self.save_changes,
-            width=guardar)
-        self.save_button.grid(row=0, column=2, **TOOLBAR_IPAD)
-
-        self.save_as_button = ttk.Button(
-            self.toolbar, text="guardar como", command=self.save_wheel,
-            width=guardar_como)
-        self.save_as_button.grid(row=0, column=3, **TOOLBAR_IPAD)
-
-        self.undo_button = ttk.Button(
-            self.toolbar, text="deshacer", command=self.undo,
-            width=deshacer)
-        self.undo_button.grid(row=0, column=4, **TOOLBAR_IPAD)
-
-        self.redo_button = ttk.Button(
-            self.toolbar, text="rehacer", command=self.redo,
-            width=rehacer)
-        self.redo_button.grid(row=0, column=5, **TOOLBAR_IPAD)
+        self.toolbar = toolbar.ToolBar(self.master, compound=tk.LEFT)
+        self.toolbar.append(
+            name="new", label="Nuevo", command=self.new_wheel,
+            image="new.png")
+        self.toolbar.append(
+            name="open", label="Abrir", command=self.open_wheel,
+            image="open.png")
+        self.toolbar.append(
+            name="save", label="Guardar", command=self.save_changes,
+            image="save.png")
+        self.toolbar.append(
+            name="save_as", label="Guardar como", command=self.save_wheel,
+            image="save_as.png")
+        self.toolbar.append(
+            name="undo", label="Deshacer", command=self.undo,
+            image="undo.png")
+        self.toolbar.append(
+            name="redo", label="rehacer", command=self.redo,
+            image="redo.png")
+        self.toolbar.grid(row=0, column=0, sticky=tk.W+tk.E, ipady=1)
 
         # create an inner frame to center the widgets
         self.notebook = widgets.ClosableNotebook(
             master=self.master,
             check_unsaved=True,
             confirm_close=lambda data: self.save_changes(index=data))
-        self.notebook.grid(row=1, column=0, sticky=tkinter.W, **TOOLBAR_IPAD)
+        self.notebook.grid(row=1, column=0, sticky=tk.W, **TOOLBAR_IPAD)
 
         self.set_events()
         if SETTINGS["default"]["opened_files"]:
@@ -280,13 +269,13 @@ class App(ttk.Frame):
                     self.notebook.tab(tab_id, text="⚫ " + text)
 
     def set_events(self):
-        self.master.bind("<Control-o>", self.open_wheel)
-        self.master.bind("<Control-n>", self.new_wheel)
-        self.master.bind("<Control-s>", self.save_changes)
-        self.master.bind("<Control-Shift-Key-S>", self.save_wheel)
-        self.master.bind("<Control-Key-z>", self.undo)
-        self.master.bind("<Control-Shift-Key-Z>", self.redo)
-        self.master.bind("<Control-Key-y>", self.redo)
+        self.master.bind_all("<Control-o>", self.open_wheel)
+        self.master.bind_all("<Control-n>", self.new_wheel)
+        self.master.bind_all("<Control-s>", self.save_changes)
+        self.master.bind_all("<Control-Shift-Key-S>", self.save_wheel)
+        self.master.bind_all("<Control-Key-z>", self.undo)
+        self.master.bind_all("<Control-Shift-Key-Z>", self.redo)
+        self.master.bind_all("<Control-Key-y>", self.redo)
         self.master.protocol("WM_DELETE_WINDOW", self.save_config)
         if self.master._windowingsystem == 'x11':
             # Pasting from the clipboard doesn't delete the current selection
@@ -296,11 +285,11 @@ class App(ttk.Frame):
                 self.master.bind_class(cls, '<<Paste>>',
                                 'catch {%W delete sel.first sel.last}\n' +
                                 self.master.bind_class(cls, '<<Paste>>'))
-        self.master.bind("<<WheelDrawed>>", self.mark_as_unsaved)
+        self.master.bind_all("<<WheelDrawed>>", self.mark_as_unsaved)
 
 
 if __name__ == '__main__':
-    master = tkinter.Tk()
+    master = tk.Tk()
 
     style = ttk.Style()
     style.configure("ClosableNotebook.Tab", padding=(10, 3))
