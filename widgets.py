@@ -21,9 +21,6 @@ def _in(a, b):
 def _not_in(a, b):
     return a not in b
 
-class Scale(ttk.Scale):
-    pass
-
 
 class ClosableNotebook(ttk.Notebook):
     """A ttk Notebook with close buttons on each tab"""
@@ -36,7 +33,7 @@ class ClosableNotebook(ttk.Notebook):
             self.__initialize_custom_style()
             self.__inititialized = True
 
-        kwargs["style"] = "TNotebook"
+        kwargs["style"] = "ClosableNotebook"
         super().__init__(*args, **kwargs)
 
         self._active = None
@@ -133,26 +130,48 @@ class ClosableNotebook(ttk.Notebook):
     def __initialize_custom_style(self):
         style = ttk.Style()
 
+        # Store images in the style database
         self.images = (
-            tkinter.PhotoImage("img_close", file="close.png"),
-            tkinter.PhotoImage("img_closeactive", file="active.png"),
-            tkinter.PhotoImage("img_closepressed", file="pressed.png"))
+            tkinter.PhotoImage("img_close_default", file="close_default.png"),
+            tkinter.PhotoImage("img_close_active", file="close_active.png"),
+            tkinter.PhotoImage("img_close_pressed", file="close_pressed.png"))
 
+        # Create the close button
         style.element_create(
-            "close", "image", "img_close",
-            ("pressed", "active", "!disabled", "img_closepressed"),
-            ("active", "!disabled", "img_closeactive"),
+            "close", "image", "img_close_default",
+            ("pressed", "active", "!disabled", "img_close_pressed"),
+            ("active", "!disabled", "img_close_active"),
             border=8, sticky="")
 
-        # notebook_layout = style.layout("TNotebook").copy()
-        # style.layout("TNotebook", notebook_layout)
+        # Copy the layout of the current theme
+        notebook_layout = style.layout("TNotebook").copy()
+        style.layout("ClosableNotebook", notebook_layout)
 
+        # Copy the configuration of the current theme
+        notebook_cfg = style.configure("TNotebook")
+        style.configure("ClosableNotebook", **notebook_cfg if notebook_cfg else {})
+        tab_cfg = style.configure("TNotebook.Tab").copy()
+        style.configure("ClosableNotebook.Tab", **tab_cfg)
+
+        # Copy the map of the current theme
+        notebook_map = style.map("TNotebook.Tab").copy()
+        try:
+            style.map("ClosableNotebook.Tab", **notebook_map)
+        except IndexError as error:
+            if error.args == ("list index out of range",):
+                style.map("ClosableNotebook.Tab", notebook_map)
+            else:
+                raise
+
+
+        # Copy the layout of the current theme
         tab_layout = style.layout("TNotebook.Tab").copy()
 
+        # Add the close button to the layout
         ans = [("Notebook.label", {"side": "left", "sticky": ""}),
                ("Notebook.close", {"side": "left", "sticky": ""})]
-
         tab_layout[0][1]["children"][0][1]["children"][0][1]["children"] = ans
 
-        style.layout("TNotebook.Tab", tab_layout)
-
+        # Add the layout to the current widget
+        style.layout("ClosableNotebook.Tab", tab_layout)
+        style.configure("ClosableNotebook.Tab", padding=(10, 3))

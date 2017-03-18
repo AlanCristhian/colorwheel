@@ -51,7 +51,7 @@ class SettingsFrameSuit(BaseSuite):
         self.assertTrue(self.settings.number_entry.winfo_manager())
 
     def test_number_scale(self):
-        self.assertIsInstance(self.settings.number_scale, widgets.Scale)
+        self.assertIsInstance(self.settings.number_scale, tkinter.Scale)
         self.assertTrue(self.settings.number_scale.winfo_manager())
 
     # start
@@ -69,7 +69,7 @@ class SettingsFrameSuit(BaseSuite):
         self.assertTrue(self.settings.start_entry.winfo_manager())
 
     def test_start_scale(self):
-        self.assertIsInstance(self.settings.start_scale, widgets.Scale)
+        self.assertIsInstance(self.settings.start_scale, tkinter.Scale)
         self.assertTrue(self.settings.start_scale.winfo_manager())
 
     # saturation
@@ -87,7 +87,7 @@ class SettingsFrameSuit(BaseSuite):
         self.assertTrue(self.settings.saturation_entry.winfo_manager())
 
     def test_saturation_scale(self):
-        self.assertIsInstance(self.settings.saturation_scale, widgets.Scale)
+        self.assertIsInstance(self.settings.saturation_scale, tkinter.Scale)
         self.assertTrue(self.settings.saturation_scale.winfo_manager())
 
     # luminosity
@@ -105,7 +105,7 @@ class SettingsFrameSuit(BaseSuite):
         self.assertTrue(self.settings.luminosity_entry.winfo_manager())
 
     def test_luminosity_scale(self):
-        self.assertIsInstance(self.settings.luminosity_scale, widgets.Scale)
+        self.assertIsInstance(self.settings.luminosity_scale, tkinter.Scale)
         self.assertTrue(self.settings.luminosity_scale.winfo_manager())
 
 

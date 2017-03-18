@@ -8,11 +8,10 @@ import widgets
 import file
 
 
-counter = itertools.count().__next__
-
-
+TOOLBAR_IPAD = {"ipadx": file.IPAD["ipadx"],
+                "ipady": round(file.IPAD["ipady"]*0.5)}
+COUNTER = itertools.count().__next__
 BASE = pathlib.Path()
-
 SETTINGS = configparser.ConfigParser()
 if (BASE/".config").exists():
     SETTINGS.read(".config")
@@ -29,7 +28,8 @@ def wheel_name(text):
     if parts:
         return str(name.name)
     else:
-        return "untitled-%s" % counter()
+        return "untitled-%s" % COUNTER()
+
 
 class App(ttk.Frame):
     def __init__(self, root):
@@ -54,39 +54,39 @@ class App(ttk.Frame):
         self.new_button = ttk.Button(
             self.toolbar, text="nuevo", command=self.new_wheel,
             width=nuevo)
-        self.new_button.grid(row=0, column=0)
+        self.new_button.grid(row=0, column=0, **TOOLBAR_IPAD)
 
         self.open_button = ttk.Button(
             self.toolbar, text="abrir", command=self.open_wheel,
             width=abrir)
-        self.open_button.grid(row=0, column=1)
+        self.open_button.grid(row=0, column=1, **TOOLBAR_IPAD)
 
         self.save_button = ttk.Button(
             self.toolbar, text="guardar", command=self.save_changes,
             width=guardar)
-        self.save_button.grid(row=0, column=2)
+        self.save_button.grid(row=0, column=2, **TOOLBAR_IPAD)
 
         self.save_as_button = ttk.Button(
             self.toolbar, text="guardar como", command=self.save_wheel,
             width=guardar_como)
-        self.save_as_button.grid(row=0, column=3)
+        self.save_as_button.grid(row=0, column=3, **TOOLBAR_IPAD)
 
         self.undo_button = ttk.Button(
             self.toolbar, text="deshacer", command=self.undo,
             width=deshacer)
-        self.undo_button.grid(row=0, column=4)
+        self.undo_button.grid(row=0, column=4, **TOOLBAR_IPAD)
 
         self.redo_button = ttk.Button(
             self.toolbar, text="rehacer", command=self.redo,
             width=rehacer)
-        self.redo_button.grid(row=0, column=5)
+        self.redo_button.grid(row=0, column=5, **TOOLBAR_IPAD)
 
         # create an inner frame to center the widgets
         self.notebook = widgets.ClosableNotebook(
             master=self.root,
             check_unsaved=True,
             confirm_close=lambda data: self.save_changes(index=data))
-        self.notebook.grid(row=1, column=0, sticky=tkinter.W)
+        self.notebook.grid(row=1, column=0, sticky=tkinter.W, **TOOLBAR_IPAD)
 
         self.set_events()
         if SETTINGS["default"]["opened_files"]:
@@ -96,7 +96,7 @@ class App(ttk.Frame):
             self.new_wheel()
 
     def new_wheel(self, event=None, name=None):
-        tab_name = "⚫ untitled-%r" % counter() if name is None \
+        tab_name = "⚫ untitled-%r" % COUNTER() if name is None \
                    else wheel_name(name)
         frame = ttk.Frame(self.notebook)
         wheel = file.File(frame)
@@ -305,5 +305,9 @@ class App(ttk.Frame):
 
 if __name__ == '__main__':
     root = tkinter.Tk()
+
+    style = ttk.Style()
+    style.configure("ClosableNotebook.Tab", padding=(10, 3))
+
     app = App(root)
     root.mainloop()
