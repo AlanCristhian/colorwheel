@@ -49,25 +49,26 @@ class App(ttk.Frame):
 
         # create the toolbar
         self.toolbar = toolbar.ToolBar(self.master)
+        self.toolbar.button_grid = {"pady": 4}
         self.toolbar.append(
             name="new", label="Nuevo", command=self.new_wheel,
-            image="new.png")
+            image=BASE/"images"/"new.png")
         self.toolbar.append(
             name="open", label="Abrir", command=self.open_wheel,
-            image="open.png")
+            image=BASE/"images"/"open.png")
         self.toolbar.append(
             name="save", label="Guardar", command=self.save_changes,
-            image="save.png")
+            image=BASE/"images"/"save.png")
         self.toolbar.append(
             name="save_as", label="Guardar como", command=self.save_wheel,
-            image="save_as.png")
+            image=BASE/"images"/"save_as.png")
         self.toolbar.append(
             name="undo", label="Deshacer", command=self.undo,
-            image="undo.png")
+            image=BASE/"images"/"undo.png")
         self.toolbar.append(
             name="redo", label="rehacer", command=self.redo,
-            image="redo.png")
-        self.toolbar.grid(row=0, column=0, sticky=tk.W+tk.E, ipady=1)
+            image=BASE/"images"/"redo.png")
+        self.toolbar.grid(row=0, column=0, sticky=tk.W+tk.E)
 
         # create an inner frame to center the widgets
         self.notebook = widgets.ClosableNotebook(

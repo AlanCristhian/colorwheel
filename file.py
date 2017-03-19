@@ -177,11 +177,12 @@ class ViewFrame(ttk.LabelFrame):
             variable=self.outline_var, command=command)
 
         # color space
+        spaces = " ".join(color.space.keys())
         self.color_space_var = tk.StringVar(self, "HSL")
         self.color_space_label = ttk.Label(self, text="Espacio de color:")
         self.color_space_combo = ttk.Combobox(
             self, textvariable=self.color_space_var, width=5,
-            justify=tk.CENTER, values="Lab Luv HSL HSV IPT JCh")
+            justify=tk.CENTER, values=spaces)
         self.color_space_combo.bind("<<ComboboxSelected>>", command)
 
     def grid(self, *args, **kwargs):
@@ -359,9 +360,10 @@ class MixerFrame(ttk.LabelFrame, SelectAfterReturn):
 
         self.algorithm_var = tk.StringVar(self, "IPT")
         self.algorithm_label = ttk.Label(self, text="Algoritmo:")
+        mixers = " ".join(color.mixer.keys())
         self.algorithm_combo = ttk.Combobox(
             self, textvariable=self.algorithm_var, width=5,
-            values="Lab Luv HSL HSV IPT JCh", justify=tk.CENTER)
+            values=mixers, justify=tk.CENTER)
         self.algorithm_combo.bind("<<ComboboxSelected>>", self.mix_colors)
 
         self.color1_label = ttk.Label(

@@ -1,6 +1,9 @@
 import tkinter
 import _tkinter
 from tkinter import ttk, messagebox
+import pathlib
+
+BASE = pathlib.Path()
 
 
 def update_title(self, frame):
@@ -130,9 +133,12 @@ class ClosableNotebook(ttk.Notebook):
 
         # Store images in the style database
         self.images = (
-            tkinter.PhotoImage("img_close_default", file="close_default.png"),
-            tkinter.PhotoImage("img_close_active", file="close_active.png"),
-            tkinter.PhotoImage("img_close_pressed", file="close_pressed.png"))
+            tkinter.PhotoImage("img_close_default",
+                               file=BASE/"images"/"close_default.png"),
+            tkinter.PhotoImage("img_close_active",
+                               file=BASE/"images"/"close_active.png"),
+            tkinter.PhotoImage("img_close_pressed",
+                               file=BASE/"images"/"close_pressed.png"))
 
         # Create the close button
         style.element_create(
