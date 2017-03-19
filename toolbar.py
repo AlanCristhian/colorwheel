@@ -14,7 +14,7 @@ class ToolBar(ttk.Frame):
         if name in self.button:
             raise ValueError(f"The name '{name}' already exists.")
         self.image[name] = None if image is None \
-                           else tk.PhotoImage(name, file=image)
+                           else tk.PhotoImage(file=image)
         self.button[name] = tk.Button(
             self, text=label, image=self.image[name], command=command,
             relief=tk.FLAT, overrelief=tk.RAISED, compound=self.compound)

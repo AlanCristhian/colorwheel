@@ -38,17 +38,8 @@ class App(ttk.Frame):
         self.grid(row=0, column=0)
         self.current_directory = SETTINGS["default"]["current_directory"]
 
-        measure = font.Font(master).measure
-
-        nuevo = "%rp" % measure("nuevo")
-        abrir = "%rp" % measure("abrir")
-        guardar = "%rp" % measure("guardar")
-        guardar_como = "%rp" % measure("guardar como")
-        deshacer = "%rp" % measure("deshacer")
-        rehacer = "%rp" % measure("rehacer")
-
         # create the toolbar
-        self.toolbar = toolbar.ToolBar(self.master)
+        self.toolbar = toolbar.ToolBar(master)
         self.toolbar.button_grid = {"pady": 4}
         self.toolbar.append(
             name="new", label="Nuevo", command=self.new_wheel,
@@ -72,7 +63,7 @@ class App(ttk.Frame):
 
         # create an inner frame to center the widgets
         self.notebook = widgets.ClosableNotebook(
-            master=self.master,
+            master=master,
             check_unsaved=True,
             confirm_close=lambda data: self.save_changes(index=data))
         self.notebook.grid(row=1, column=0, sticky=tk.W, **TOOLBAR_IPAD)

@@ -1,8 +1,12 @@
 import unittest
 import tkinter as tk
 from tkinter import ttk
+import pathlib
 
 import toolbar
+
+
+BASE = pathlib.Path()
 
 
 class ToolBarSuite(unittest.TestCase):
@@ -39,9 +43,8 @@ class ToolBarSuite(unittest.TestCase):
 
     def test_button_image(self):
         self.toolbar.append(name="name3", label="Button 3",
-                            image="new.png")
+                            image=BASE/"images"/"new.png")
         self.assertIsInstance(self.toolbar.image["name3"], tk.PhotoImage)
-        self.assertEqual(self.toolbar.button["name3"]["image"], "name3")
 
     def test_button_command(self):
         value = 5
