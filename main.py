@@ -9,8 +9,6 @@ import file
 import toolbar
 
 
-TOOLBAR_IPAD = {"ipadx": file.IPAD["ipadx"],
-                "ipady": round(file.IPAD["ipady"]*0.5)}
 COUNTER = itertools.count().__next__
 BASE = pathlib.Path()
 SETTINGS = configparser.ConfigParser()
@@ -40,7 +38,7 @@ class App(ttk.Frame):
 
         # create the toolbar
         self.toolbar = toolbar.ToolBar(master)
-        self.toolbar.button_grid = {"pady": 4}
+        self.toolbar.button_grid = {"pady": 8, "padx": (8, 0)}
         self.toolbar.append(
             name="new", label="Nuevo", command=self.new_wheel,
             image=BASE/"images"/"new.png")
@@ -66,7 +64,7 @@ class App(ttk.Frame):
             master=master,
             check_unsaved=True,
             confirm_close=lambda data: self.save_changes(index=data))
-        self.notebook.grid(row=1, column=0, sticky=tk.W, **TOOLBAR_IPAD)
+        self.notebook.grid(row=1, column=0, sticky=tk.W)
 
         self.set_events()
         if SETTINGS["default"]["opened_files"]:
@@ -282,9 +280,5 @@ class App(ttk.Frame):
 
 if __name__ == '__main__':
     master = tk.Tk()
-
-    style = ttk.Style()
-    style.configure("ClosableNotebook.Tab", padding=(10, 3))
-
     app = App(master)
     master.mainloop()
