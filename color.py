@@ -1,7 +1,8 @@
 from math import radians, cos, sin
 
 from colormath.color_objects import (LCHuvColor, LCHabColor, HSLColor,
-                                     HSVColor, IPTColor, sRGBColor)
+                                     HSVColor, IPTColor, sRGBColor,
+                                     XYZColor)
 from colormath.color_conversions import convert_color
 from colorspacious import cspace_convert
 
@@ -79,15 +80,47 @@ def jch(start, amount, saturation, luminosity):
 
 
 def jch_mixer(color1, color2):
-        rgb1, rgb2 = hex_to_rgb(color1), hex_to_rgb(color2)
-        x1, y1, z1 = cspace_convert(rgb1, "sRGB255", "JCh").tolist()
-        x2, y2, z2 = cspace_convert(rgb2, "sRGB255", "JCh").tolist()
-        ans = ((x1 + x2)/2, (y1 + y2)/2 , (z1 + z2)/2)
-        ans = cspace_convert(ans, "JCh", "sRGB1").tolist()
-        ans = sRGBColor(*ans)
-        ans = (ans.clamped_rgb_r, ans.clamped_rgb_g, ans.clamped_rgb_b)
-        ans = tuple(round(i*255) for i in ans)
-        return "#%02x%02x%02x" % ans
+    rgb1, rgb2 = hex_to_rgb(color1), hex_to_rgb(color2)
+    x1, y1, z1 = cspace_convert(rgb1, "sRGB255", "JCh").tolist()
+    x2, y2, z2 = cspace_convert(rgb2, "sRGB255", "JCh").tolist()
+    ans = ((x1 + x2)/2, (y1 + y2)/2 , (z1 + z2)/2)
+    ans = cspace_convert(ans, "JCh", "sRGB1").tolist()
+    ans = sRGBColor(*ans)
+    ans = (ans.clamped_rgb_r, ans.clamped_rgb_g, ans.clamped_rgb_b)
+    ans = tuple(round(i*255) for i in ans)
+    return "#%02x%02x%02x" % ans
+
+
+def ipt_jch(start, amount, saturation, luminosity):
+    # Generate colors
+    k = 360/amount
+    colors = [(luminosity, saturation, start + i*k) for i in range(amount)]
+
+    # From lch to IPT
+    ans = ((l/100, c/100*cos(radians(h)), c/100*sin(radians(h)))
+           for l, c, h in colors)
+
+    # From IPT to XYZ1
+    ans = (convert_color(IPTColor(i, p, t), XYZColor, target_illuminant="d65")
+           for i, p, t in ans)
+    ipt_colors = (color.get_value_tuple() for color in ans)
+
+    # From JCh to XYZ1
+    ans = (cspace_convert(color, "JCh", "XYZ1") for color in colors)
+    jch_colors = (color.tolist() for color in ans)
+
+    # Compute average
+    ans = (((x1 + x2)/2, (y1 + y2)/2 , (z1 + z2)/2)
+           for (x1, y1, z1), (x2, y2, z2)
+           in zip(ipt_colors, jch_colors))
+
+    # From XYZ1 to sRGB1
+    ans = (cspace_convert(color, "XYZ1", "sRGB1") for color in ans)
+    ans = ((color.tolist() for color in ans))
+    ans = (sRGBColor(*color) for color in ans)
+
+    return to_hex_rgb(ans)
+
 
 space = {
     "Lab": create_system(lchab),
@@ -96,6 +129,7 @@ space = {
     "HSV": create_system(hsv),
     "IPT": create_system(ipt),
     "JCh": jch,
+    "IPT+JCh": ipt_jch,
 }
 
 
