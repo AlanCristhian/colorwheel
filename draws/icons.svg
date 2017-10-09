@@ -93,9 +93,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="5.6568542"
-     inkscape:cx="79.940085"
-     inkscape:cy="713.14256"
+     inkscape:zoom="8"
+     inkscape:cx="65.090541"
+     inkscape:cy="779.85855"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="true"
@@ -103,16 +103,16 @@
      inkscape:object-paths="true"
      inkscape:snap-bbox="true"
      inkscape:object-nodes="true"
-     inkscape:snap-nodes="true"
-     inkscape:bbox-nodes="false"
+     inkscape:snap-nodes="false"
+     inkscape:bbox-nodes="true"
      inkscape:window-width="1366"
      inkscape:window-height="744"
      inkscape:window-x="0"
      inkscape:window-y="24"
      inkscape:window-maximized="1"
-     inkscape:snap-object-midpoints="true"
+     inkscape:snap-object-midpoints="false"
      showguides="true"
-     inkscape:snap-others="true"
+     inkscape:snap-others="false"
      inkscape:snap-center="true"
      inkscape:snap-global="true">
     <inkscape:grid
@@ -496,6 +496,119 @@
          width="16"
          id="rect8588"
          style="opacity:1;fill:none;fill-opacity:1;stroke:none;stroke-width:1;stroke-linecap:square;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
+    </g>
+    <g
+       id="g8334"
+       inkscape:export-filename="/home/alancristhian/colorwheel/images/check_default.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90">
+      <rect
+         style="opacity:1;fill:#ededed;fill-opacity:1;stroke:#a7aba7;stroke-width:1;stroke-linecap:square;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="rect8293"
+         width="14"
+         height="14.000009"
+         x="25.5"
+         y="272.86218"
+         rx="2.8"
+         ry="2.8000016" />
+      <rect
+         ry="2.8269026"
+         rx="2.8618784"
+         y="271.36221"
+         x="25"
+         height="16"
+         width="16"
+         id="rect8328"
+         style="opacity:1;fill:none;fill-opacity:1;stroke:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
+    </g>
+    <g
+       id="g8338"
+       inkscape:export-filename="/home/alancristhian/colorwheel/images/check_active.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90">
+      <rect
+         ry="2.8000016"
+         rx="2.8"
+         y="272.86221"
+         x="45.5"
+         height="14.000009"
+         width="14"
+         id="rect8257-3-6"
+         style="opacity:1;fill:#f6f6f6;fill-opacity:1;stroke:#4a90d9;stroke-width:1;stroke-linecap:square;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
+      <rect
+         style="opacity:1;fill:none;fill-opacity:1;stroke:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="rect8330"
+         width="16"
+         height="16"
+         x="45"
+         y="271.36221"
+         rx="2.8618784"
+         ry="2.8269026" />
+    </g>
+    <g
+       id="g8406"
+       inkscape:export-filename="/home/alancristhian/colorwheel/images/check_pressed.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90">
+      <rect
+         ry="2.8000016"
+         rx="2.8"
+         y="272.86218"
+         x="65.5"
+         height="14.000009"
+         width="14"
+         id="rect8257"
+         style="opacity:1;fill:#f6f6f6;fill-opacity:1;stroke:#4a90d7;stroke-width:1;stroke-linecap:square;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
+      <path
+         sodipodi:nodetypes="ccc"
+         inkscape:connector-curvature="0"
+         id="path8259"
+         d="m 69.5,278.86219 3,3 7,-9"
+         style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <rect
+         ry="2.8269026"
+         rx="2.8618784"
+         y="271.36221"
+         x="65"
+         height="16"
+         width="16"
+         id="rect8332"
+         style="opacity:1;fill:none;fill-opacity:1;stroke:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
+    </g>
+    <g
+       inkscape:export-ydpi="90"
+       inkscape:export-xdpi="90"
+       inkscape:export-filename="/home/alancristhian/colorwheel/images/check_selected.png"
+       id="g8348"
+       transform="translate(20,0)">
+      <g
+         id="g8350"
+         transform="translate(0,1.3524153e-5)">
+        <rect
+           ry="2.8000016"
+           rx="2.8"
+           y="272.86218"
+           x="65.5"
+           height="14.000009"
+           width="14"
+           id="rect8352"
+           style="opacity:1;fill:#ededed;fill-opacity:1;stroke:#a7aba7;stroke-width:1;stroke-linecap:square;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
+        <path
+           sodipodi:nodetypes="ccc"
+           inkscape:connector-curvature="0"
+           id="path8354"
+           d="m 69.5,278.86218 3,3 7,-9"
+           style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      </g>
+      <rect
+         style="opacity:1;fill:none;fill-opacity:1;stroke:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="rect8356"
+         width="16"
+         height="16"
+         x="65"
+         y="271.36221"
+         rx="2.8618784"
+         ry="2.8269026" />
     </g>
   </g>
 </svg>
