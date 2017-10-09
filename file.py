@@ -3,6 +3,7 @@ from tkinter import ttk, font
 from math import sqrt
 import color
 import logging
+import sys
 
 import widgets
 
@@ -34,16 +35,16 @@ class Em:
         return round(self.value*other)
 
 
-em = Em(15)
+em = Em(16)
 
 
-IPAD = {"ipadx": 0.5*em, "ipady": 0.25*em}
+IPAD = {"ipadx": 7, "ipady": 4}
 
 
 class SelectAfterReturn:
     def select_changed_value(self):
         widget = self.master.focus_get()
-        if isinstance(widget, ttk.Entry):
+        if isinstance(widget, tk.Entry):
            index = len(widget.get())
            widget.select_range(0, index)
 
@@ -51,49 +52,73 @@ class SelectAfterReturn:
 class SettingsFrame(ttk.LabelFrame):
     def __init__(self, master, text):
         super().__init__(master, text=text)
+        if sys.platform == "linux":
+            s = ttk.Style()
+            SCALE_STYLE = {
+                "font": s.lookup(".", "font"),
+                "foreground": s.lookup(".", "foreground"),
+                "background": s.lookup(".", "background"),
+                "highlightbackground": s.lookup(".", "background"),
+                "troughcolor": s.lookup(".", "troughcolor"),
+            }
+        else:
+            SCALE_STYLE = {}
+
 
         # number
         self.number_var = tk.IntVar(self, 360)
+        self.number_var.min, self.number_var.max = 0, 360
         self.number_label = ttk.Label(self, text="Cantidad:")
-        self.number_entry = ttk.Entry(
+        self.number_entry = tk.Entry(
             self, textvariable=self.number_var, width=3, justify=tk.CENTER)
         self.number_scale = tk.Scale(
-            self, variable=self.number_var, **SCALE_360)
+            self, variable=self.number_var, **SCALE_360, **SCALE_STYLE)
 
         # start
         self.start_var = tk.IntVar(self, 0)
+        self.start_var.min, self.start_var.max = 0, 360
         self.start_label = ttk.Label(self, text="Empezar en:")
-        self.start_entry = ttk.Entry(
+        self.start_entry = tk.Entry(
             self, textvariable=self.start_var, width=3, justify=tk.CENTER)
         self.start_scale = tk.Scale(
-            self, variable=self.start_var, **SCALE_360)
+            self, variable=self.start_var, **SCALE_360, **SCALE_STYLE)
 
         # saturation
         self.saturation_var = tk.IntVar(self, 50)
+        self.saturation_var.min, self.saturation_var.max = 0, 100
         self.saturation_label = ttk.Label(self, text="Saturación:")
-        self.saturation_entry = ttk.Entry(
+        self.saturation_entry = tk.Entry(
             self, textvariable=self.saturation_var, width=3, justify=tk.CENTER)
         self.saturation_scale = tk.Scale(
-            self, variable=self.saturation_var, **SCALE_100)
+            self, variable=self.saturation_var, **SCALE_100, **SCALE_STYLE)
 
         # luminosity
         self.luminosity_var = tk.IntVar(self, 50)
+        self.luminosity_var.min, self.luminosity_var.max = 0, 100
         self.luminosity_label = ttk.Label(self, text="Luminosidad:")
-        self.luminosity_entry = ttk.Entry(
+        self.luminosity_entry = tk.Entry(
             self, textvariable=self.luminosity_var, width=3, justify=tk.CENTER)
         self.luminosity_scale = tk.Scale(
-            self, variable=self.luminosity_var, **SCALE_100)
+            self, variable=self.luminosity_var, **SCALE_100, **SCALE_STYLE)
 
         self.set_events()
 
     def incrementer(self, variable):
         def increment(self, event=None):
-            variable.set(variable.get() + 1)
+            value = variable.get() + 1
+            if value > variable.max:
+                variable.set(variable.min)
+            else:
+                variable.set(value)
         return increment
 
     def decrementer(self, variable):
         def decrement(self, event=None):
-            variable.set(variable.get() - 1)
+            value = variable.get() - 1
+            if value < variable.min:
+                variable.set(variable.max)
+            else:
+                variable.set(value)
         return decrement
 
     def grid(self, *args, **kwargs):
@@ -167,8 +192,8 @@ class ViewFrame(ttk.LabelFrame):
         # background
         self.background_var = tk.StringVar(self, "gray20")
         self.background_label = ttk.Label(self, text="Color de fondo:")
-        self.background_entry = ttk.Entry(
-            self, textvariable=self.background_var, width=7, justify=tk.CENTER)
+        self.background_entry = tk.Entry(
+            self, textvariable=self.background_var, width=9, justify=tk.CENTER)
 
         # outline
         self.outline_var = tk.IntVar(self)
@@ -181,7 +206,7 @@ class ViewFrame(ttk.LabelFrame):
         self.color_space_var = tk.StringVar(self, "HSL")
         self.color_space_label = ttk.Label(self, text="Espacio de color:")
         self.color_space_combo = ttk.Combobox(
-            self, textvariable=self.color_space_var, width=5,
+            self, textvariable=self.color_space_var, width=8,
             justify=tk.CENTER, values=spaces)
         self.color_space_combo.bind("<<ComboboxSelected>>", command)
 
@@ -222,7 +247,8 @@ class ViewFrame(ttk.LabelFrame):
 class DataFrame(ttk.Frame):
     def __init__(self, master):
         super().__init__(master)
-        _TREEVIEW_SETTINGS = {"show": "headings", "selectmode": "browse"}
+        _TREEVIEW_SETTINGS = {"show": "headings", "selectmode": "browse",
+                              "height": 6}
 
         self.color_treeview = ttk.Treeview(
             self, columns=["Color"], **_TREEVIEW_SETTINGS)
@@ -237,12 +263,20 @@ class DataFrame(ttk.Frame):
         self.b_treeview = ttk.Treeview(
             self, columns=["B"], **_TREEVIEW_SETTINGS)
 
+        self.abs_rg_treeview = ttk.Treeview(
+            self, columns=["abs(R - G)"], **_TREEVIEW_SETTINGS)
+        self.abs_gb_treeview = ttk.Treeview(
+            self, columns=["abs(G - B)"], **_TREEVIEW_SETTINGS)
+        self.abs_br_treeview = ttk.Treeview(
+            self, columns=["abs(B - R)"], **_TREEVIEW_SETTINGS)
+
         measure = font.Font(master).measure
 
         M1 = measure(" Color")
         M2 = measure("Hex RGB")
         M3 = measure("Hex RGBA")
         M4 = measure(" 000")
+        M5 = measure("|R - G|")
 
         self.color_treeview.column("Color", width=M1)
         self.color_treeview.heading("Color", text="Color")
@@ -260,6 +294,13 @@ class DataFrame(ttk.Frame):
         self.b_treeview.column("B", width=M4)
         self.b_treeview.heading("B", text="B")
 
+        self.abs_rg_treeview.column("abs(R - G)", width=M5)
+        self.abs_rg_treeview.heading("abs(R - G)", text="|R - G|")
+        self.abs_gb_treeview.column("abs(G - B)", width=M5)
+        self.abs_gb_treeview.heading("abs(G - B)", text="|G - B|")
+        self.abs_br_treeview.column("abs(B - R)", width=M5)
+        self.abs_br_treeview.heading("abs(B - R)", text="|B - R|")
+
         self.scroll = ttk.Scrollbar(self)
         self.scroll.configure(command=self.set_yview)
 
@@ -270,12 +311,18 @@ class DataFrame(ttk.Frame):
         self.r_treeview.configure(yscrollcommand=self.set_scroll)
         self.g_treeview.configure(yscrollcommand=self.set_scroll)
         self.b_treeview.configure(yscrollcommand=self.set_scroll)
+        self.abs_rg_treeview.configure(yscrollcommand=self.set_scroll)
+        self.abs_gb_treeview.configure(yscrollcommand=self.set_scroll)
+        self.abs_br_treeview.configure(yscrollcommand=self.set_scroll)
 
         self.copy_hexrgb_data = self.copy_data(self.hexrgb_treeview)
         self.copy_hexrgba_data = self.copy_data(self.hexrgba_treeview)
         self.copy_r_data = self.copy_data(self.r_treeview)
         self.copy_g_data = self.copy_data(self.g_treeview)
         self.copy_b_data = self.copy_data(self.b_treeview)
+        self.copy_abs_rg_data = self.copy_data(self.abs_rg_treeview)
+        self.copy_abs_gb_data = self.copy_data(self.abs_gb_treeview)
+        self.copy_abs_br_data = self.copy_data(self.abs_br_treeview)
 
         self.set_events()
 
@@ -287,7 +334,10 @@ class DataFrame(ttk.Frame):
         self.r_treeview.grid(row=0, column=3, sticky=tk.N + tk.S)
         self.g_treeview.grid(row=0, column=4, sticky=tk.N + tk.S)
         self.b_treeview.grid(row=0, column=5, sticky=tk.N + tk.S)
-        self.scroll.grid(row=0, column=6, sticky=tk.N + tk.S)
+        self.abs_rg_treeview.grid(row=0, column=6, sticky=tk.N + tk.S)
+        self.abs_gb_treeview.grid(row=0, column=7, sticky=tk.N + tk.S)
+        self.abs_br_treeview.grid(row=0, column=8, sticky=tk.N + tk.S)
+        self.scroll.grid(row=0, column=9, sticky=tk.N + tk.S)
 
     def set_yview(self, *args):
         self.color_treeview.yview(*args)
@@ -296,6 +346,9 @@ class DataFrame(ttk.Frame):
         self.r_treeview.yview(*args)
         self.g_treeview.yview(*args)
         self.b_treeview.yview(*args)
+        self.abs_rg_treeview.yview(*args)
+        self.abs_gb_treeview.yview(*args)
+        self.abs_br_treeview.yview(*args)
 
     def set_scroll(self, x, y):
         self.set_yview("moveto", x)
@@ -310,6 +363,9 @@ class DataFrame(ttk.Frame):
         self.r_treeview.insert("", "end", values=[R])
         self.g_treeview.insert("", "end", values=[G])
         self.b_treeview.insert("", "end", values=[B])
+        self.abs_rg_treeview.insert("", "end", values=[abs(R - G)])
+        self.abs_gb_treeview.insert("", "end", values=[abs(G - B)])
+        self.abs_br_treeview.insert("", "end", values=[abs(B - R)])
 
     def delete_all(self):
         trees = zip(self.color_treeview.get_children(),
@@ -317,15 +373,21 @@ class DataFrame(ttk.Frame):
                     self.hexrgba_treeview.get_children(),
                     self.r_treeview.get_children(),
                     self.g_treeview.get_children(),
-                    self.b_treeview.get_children())
+                    self.b_treeview.get_children(),
+                    self.abs_rg_treeview.get_children(),
+                    self.abs_gb_treeview.get_children(),
+                    self.abs_br_treeview.get_children())
 
-        for t1, t2, t3, t4, t5, t6 in trees:
+        for t1, t2, t3, t4, t5, t6, t7, t8, t9 in trees:
             self.color_treeview.delete(t1)
             self.hexrgb_treeview.delete(t2)
             self.hexrgba_treeview.delete(t3)
             self.r_treeview.delete(t4)
             self.g_treeview.delete(t5)
             self.b_treeview.delete(t6)
+            self.abs_rg_treeview.delete(t7)
+            self.abs_gb_treeview.delete(t8)
+            self.abs_br_treeview.delete(t9)
 
     def copy_data(self, tree):
         def copy_content(event):
@@ -341,6 +403,9 @@ class DataFrame(ttk.Frame):
         self.r_treeview.bind("<Double-Button-1>", self.copy_r_data)
         self.g_treeview.bind("<Double-Button-1>", self.copy_g_data)
         self.b_treeview.bind("<Double-Button-1>", self.copy_b_data)
+        self.abs_rg_treeview.bind("<Double-Button-1>", self.copy_abs_rg_data)
+        self.abs_gb_treeview.bind("<Double-Button-1>", self.copy_abs_gb_data)
+        self.abs_br_treeview.bind("<Double-Button-1>", self.copy_abs_br_data)
 
 
 class MixerFrame(ttk.LabelFrame, SelectAfterReturn):
@@ -351,11 +416,11 @@ class MixerFrame(ttk.LabelFrame, SelectAfterReturn):
         self.color2_var = tk.StringVar(self, "#b3b3b3")
         self.color3_var = tk.StringVar(self, "#b3b3b3")
 
-        self.color1_entry = ttk.Entry(
+        self.color1_entry = tk.Entry(
             self, textvariable=self.color1_var, width=7, justify=tk.CENTER)
-        self.color2_entry = ttk.Entry(
+        self.color2_entry = tk.Entry(
             self, textvariable=self.color2_var, width=7, justify=tk.CENTER)
-        self.color3_entry = ttk.Entry(
+        self.color3_entry = tk.Entry(
             self, textvariable=self.color3_var, width=7, justify=tk.CENTER)
 
         self.algorithm_var = tk.StringVar(self, "IPT")
@@ -523,7 +588,7 @@ class File(ttk.Frame, SelectAfterReturn):
         self.saved = True
 
         self.height = 630
-        self.width = 762
+        self.width = 630
         self.set_position()
 
         self.create_widgets()
@@ -548,16 +613,18 @@ class File(ttk.Frame, SelectAfterReturn):
 
     def grid(self, *args, **kwargs):
         super().grid(*args, **kwargs)
-        self.canvas.grid(row=0, column=3, rowspan=3, padx=1*em, pady=1*em)
+        self.canvas.grid(row=0, column=3, rowspan=3, padx=1*em, pady=1*em,
+                         sticky=tk.N)
         self.settings.grid(
             row=0, column=0, columnspan=2, padx=(1*em, 0), pady=(1*em, 0))
         self.view.grid(
             row=1, column=0, padx=(1*em, 0), pady=(1*em, 0),
             sticky=tk.E+tk.W)
         self.mixer.grid(
-            row=1, column=1, rowspan=2, sticky=tk.N+tk.E+tk.W,
+            # row=1, column=1, rowspan=2, sticky=tk.N+tk.E+tk.W,
+            row=1, column=1, sticky=tk.N+tk.E+tk.W,
             padx=(1*em, 0), pady=(1*em, 0))
-        self.data.grid(row=2, column=0, padx=(1*em, 0), pady=1*em)
+        self.data.grid(row=2, columnspan=2, column=0, padx=(1*em, 0), pady=1*em)
 
     def draw_default_wheel(self, event=None):
         number = max(self.settings.number, 1)
@@ -565,6 +632,7 @@ class File(ttk.Frame, SelectAfterReturn):
         luminosity = self.settings.luminosity
         start = self.settings.start
         step = 360/number
+        step_2 = round(step/2)
         background = self.view.background
         self.canvas.create_rectangle(0, 0, self.width, self.height,
                                      fill=background, outline=background)
@@ -595,13 +663,14 @@ class File(ttk.Frame, SelectAfterReturn):
         else:
             for i, (hex_val, R, G, B) in enumerate(colors):
                 self.canvas.create_arc(self.position, fill=hex_val,
-                                       start=(i*step), extent=step,
+                                       start=(start - step_2 + i*step), extent=step,
                                        outline="black" if outline else hex_val)
                 self.data.insert(hex_val, R, G, B)
 
         self.canvas.create_oval(x1 + 50, y1 + 50, x2 - 50, y2 - 50,
                                 fill=background,
                                 outline="black" if outline else background)
+
         self.canvas.update()
         self.select_changed_value()
 
