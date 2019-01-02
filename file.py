@@ -11,17 +11,15 @@ logging.basicConfig(filename="color_wheel.log", level=logging.ERROR)
 
 
 SCALE_360 = {
-    "from_": 0,
+    "from_": 1,
     "to": 360,
     "length": 360,
-    "tickinterval": 45,
     "orient": tk.HORIZONTAL,
 }
 SCALE_100 = {
-    "from_": 0,
+    "from_": 1,
     "to": 100,
     "length": 360,
-    "tickinterval": 10,
     "orient": tk.HORIZONTAL,
 }
 VOID = [""]
@@ -44,62 +42,59 @@ IPAD = {"ipadx": 7, "ipady": 4}
 class SelectAfterReturn:
     def select_changed_value(self):
         widget = self.master.focus_get()
-        if isinstance(widget, tk.Entry):
+        if isinstance(widget, ttk.Entry):
            index = len(widget.get())
            widget.select_range(0, index)
+
+
+def _rounder(scale, variable):
+    def round_value(self, event=None):
+        value = scale.get()
+        if round(value) != value:
+            scale.set(round(value))
+            variable.set(round(value))
+    return round_value
 
 
 class SettingsFrame(ttk.LabelFrame):
     def __init__(self, master, text):
         super().__init__(master, text=text)
-        if sys.platform == "linux":
-            s = ttk.Style()
-            SCALE_STYLE = {
-                "font": s.lookup(".", "font"),
-                "foreground": s.lookup(".", "foreground"),
-                "background": s.lookup(".", "background"),
-                "highlightbackground": s.lookup(".", "background"),
-                "troughcolor": s.lookup(".", "troughcolor"),
-            }
-        else:
-            SCALE_STYLE = {}
-
 
         # number
         self.number_var = tk.IntVar(self, 360)
         self.number_var.min, self.number_var.max = 0, 360
         self.number_label = ttk.Label(self, text="Cantidad:")
-        self.number_entry = tk.Entry(
+        self.number_entry = ttk.Entry(
             self, textvariable=self.number_var, width=3, justify=tk.CENTER)
-        self.number_scale = tk.Scale(
-            self, variable=self.number_var, **SCALE_360, **SCALE_STYLE)
+        self.number_scale = ttk.Scale(
+            self, variable=self.number_var, **SCALE_360)
 
         # start
         self.start_var = tk.IntVar(self, 0)
         self.start_var.min, self.start_var.max = 0, 360
         self.start_label = ttk.Label(self, text="Empezar en:")
-        self.start_entry = tk.Entry(
+        self.start_entry = ttk.Entry(
             self, textvariable=self.start_var, width=3, justify=tk.CENTER)
-        self.start_scale = tk.Scale(
-            self, variable=self.start_var, **SCALE_360, **SCALE_STYLE)
+        self.start_scale = ttk.Scale(
+            self, variable=self.start_var, **SCALE_360)
 
         # saturation
         self.saturation_var = tk.IntVar(self, 50)
         self.saturation_var.min, self.saturation_var.max = 0, 100
         self.saturation_label = ttk.Label(self, text="Saturación:")
-        self.saturation_entry = tk.Entry(
+        self.saturation_entry = ttk.Entry(
             self, textvariable=self.saturation_var, width=3, justify=tk.CENTER)
-        self.saturation_scale = tk.Scale(
-            self, variable=self.saturation_var, **SCALE_100, **SCALE_STYLE)
+        self.saturation_scale = ttk.Scale(
+            self, variable=self.saturation_var, **SCALE_100)
 
         # luminosity
         self.luminosity_var = tk.IntVar(self, 50)
         self.luminosity_var.min, self.luminosity_var.max = 0, 100
         self.luminosity_label = ttk.Label(self, text="Luminosidad:")
-        self.luminosity_entry = tk.Entry(
+        self.luminosity_entry = ttk.Entry(
             self, textvariable=self.luminosity_var, width=3, justify=tk.CENTER)
-        self.luminosity_scale = tk.Scale(
-            self, variable=self.luminosity_var, **SCALE_100, **SCALE_STYLE)
+        self.luminosity_scale = ttk.Scale(
+            self, variable=self.luminosity_var, **SCALE_100)
 
         self.set_events()
 
@@ -130,22 +125,22 @@ class SettingsFrame(ttk.LabelFrame):
         self.number_scale.grid(row=0, column=2, padx=1*em)
 
         # start
-        self.start_label.grid(row=1, column=0, sticky=tk.E, padx=(1*em, 0))
-        self.start_entry.grid(row=1, column=1, **IPAD, padx=(1*em, 0))
-        self.start_scale.grid(row=1, column=2, padx=1*em)
+        self.start_label.grid(row=1, column=0, sticky=tk.E, padx=(1*em, 0), pady=(1*em, 0))
+        self.start_entry.grid(row=1, column=1, **IPAD, padx=(1*em, 0), pady=(1*em, 0))
+        self.start_scale.grid(row=1, column=2, padx=1*em, pady=(1*em, 0))
 
         # Saturation
-        self.saturation_label.grid(row=2, column=0, sticky=tk.E, padx=(1*em, 0))
-        self.saturation_entry.grid(row=2, column=1, **IPAD, padx=(1*em, 0))
-        self.saturation_scale.grid(row=2, column=2, padx=1*em)
+        self.saturation_label.grid(row=2, column=0, sticky=tk.E, padx=(1*em, 0), pady=(1*em, 0))
+        self.saturation_entry.grid(row=2, column=1, **IPAD, padx=(1*em, 0), pady=(1*em, 0))
+        self.saturation_scale.grid(row=2, column=2, padx=1*em,  pady=(1*em, 0))
 
         # luminosity
         self.luminosity_label.grid(
-            row=3, column=0, sticky=tk.E, padx=(1*em, 0), pady=(0, 1*em))
+            row=3, column=0, sticky=tk.E, padx=(1*em, 0), pady=1*em)
         self.luminosity_entry.grid(
-            row=3, column=1, **IPAD, padx=(1*em, 0), pady=(0, 1*em))
+            row=3, column=1, **IPAD, padx=(1*em, 0), pady=1*em)
         self.luminosity_scale.grid(
-            row=3, column=2, padx=1*em, pady=(0, 1*em))
+            row=3, column=2, padx=1*em, pady=1*em)
 
     def set_events(self):
         increment_number_var = self.incrementer(self.number_var)
@@ -157,6 +152,16 @@ class SettingsFrame(ttk.LabelFrame):
         increment_luminosity_var = self.incrementer(self.luminosity_var)
         decrement_luminosity_var = self.decrementer(self.luminosity_var)
 
+        round_number_var = _rounder(self.number_scale, self.number_var)
+        round_start_var = _rounder(self.start_scale, self.start_var)
+        round_saturation_var = _rounder(self.saturation_scale, self.saturation_var)
+        round_luminosity_var = _rounder(self.luminosity_scale, self.luminosity_var)
+
+        self.number_scale.configure(command=round_number_var)
+        self.start_scale.configure(command=round_start_var)
+        self.saturation_scale.configure(command=round_saturation_var)
+        self.luminosity_scale.configure(command=round_luminosity_var)
+
         self.number_entry.bind("<Up>", increment_number_var)
         self.number_entry.bind("<Down>", decrement_number_var)
         self.start_entry.bind("<Up>", increment_start_var)
@@ -165,6 +170,8 @@ class SettingsFrame(ttk.LabelFrame):
         self.saturation_entry.bind("<Down>", decrement_saturation_var)
         self.luminosity_entry.bind("<Up>", increment_luminosity_var)
         self.luminosity_entry.bind("<Down>", decrement_luminosity_var)
+
+
 
     @property
     def number(self): return self.number_var.get()
@@ -192,8 +199,8 @@ class ViewFrame(ttk.LabelFrame):
         # background
         self.background_var = tk.StringVar(self, "gray20")
         self.background_label = ttk.Label(self, text="Color de fondo:")
-        self.background_entry = tk.Entry(
-            self, textvariable=self.background_var, width=9, justify=tk.CENTER)
+        self.background_entry = ttk.Entry(
+            self, textvariable=self.background_var, width=11, justify=tk.CENTER)
 
         # outline
         self.outline_var = tk.IntVar(self)
@@ -206,7 +213,7 @@ class ViewFrame(ttk.LabelFrame):
         self.color_space_var = tk.StringVar(self, "HSL")
         self.color_space_label = ttk.Label(self, text="Espacio de color:")
         self.color_space_combo = ttk.Combobox(
-            self, textvariable=self.color_space_var, width=8,
+            self, textvariable=self.color_space_var, width=9,
             justify=tk.CENTER, values=spaces)
         self.color_space_combo.bind("<<ComboboxSelected>>", command)
 
@@ -220,10 +227,10 @@ class ViewFrame(ttk.LabelFrame):
         self.color_space_label.grid(
             row=1, column=0, padx=(1*em, 0), pady=1*em, sticky=tk.E)
         self.color_space_combo.grid(
-            row=1, column=1, **IPAD, padx=(1*em, 0), pady=1*em)
+            row=1, column=1, **IPAD, padx=(1*em, 0), pady=(1*em, 0))
 
         self.outline_checkbutton.grid(
-            row=0, column=2, padx=1*em, pady=(1*em, 0))
+            row=2, column=0, padx=1*em, pady=1*em)
 
     @property
     def background(self): return self.background_var.get()
@@ -272,11 +279,11 @@ class DataFrame(ttk.Frame):
 
         measure = font.Font(master).measure
 
-        M1 = measure(" Color")
-        M2 = measure("Hex RGB")
-        M3 = measure("Hex RGBA")
-        M4 = measure(" 000")
-        M5 = measure("|R - G|")
+        M1 = measure(" Color ")
+        M2 = measure(" Hex RGB ")
+        M3 = measure(" Hex RGBA ")
+        M4 = measure(" 000 ")
+        M5 = measure(" mmmmm ") - 1*em
 
         self.color_treeview.column("Color", width=M1)
         self.color_treeview.heading("Color", text="Color")
@@ -288,11 +295,11 @@ class DataFrame(ttk.Frame):
         self.hexrgba_treeview.heading("Hex RGBA", text="Hex RGBA")
 
         self.r_treeview.column("R", width=M4)
-        self.r_treeview.heading("R", text="R")
+        self.r_treeview.heading("R", text=" R ")
         self.g_treeview.column("G", width=M4)
-        self.g_treeview.heading("G", text="G")
+        self.g_treeview.heading("G", text=" G ")
         self.b_treeview.column("B", width=M4)
-        self.b_treeview.heading("B", text="B")
+        self.b_treeview.heading("B", text=" B ")
 
         self.abs_rg_treeview.column("abs(R - G)", width=M5)
         self.abs_rg_treeview.heading("abs(R - G)", text="|R - G|")
@@ -354,9 +361,9 @@ class DataFrame(ttk.Frame):
         self.set_yview("moveto", x)
         self.scroll.set(x, y)
 
-    def insert(self, hex_val, R, G, B):
+    def insert(self, hex_val, R, G, B, i):
         rgb_val = hex_val.lstrip('#')
-        self.color_treeview.insert("", "end", values=VOID, tags=[rgb_val])
+        self.color_treeview.insert("", "end", values=i, tags=[rgb_val])
         self.color_treeview.tag_configure(rgb_val, background=hex_val)
         self.hexrgb_treeview.insert("", "end", values=[rgb_val])
         self.hexrgba_treeview.insert("", "end", values=[rgb_val + "ff"])
@@ -416,18 +423,18 @@ class MixerFrame(ttk.LabelFrame, SelectAfterReturn):
         self.color2_var = tk.StringVar(self, "#b3b3b3")
         self.color3_var = tk.StringVar(self, "#b3b3b3")
 
-        self.color1_entry = tk.Entry(
+        self.color1_entry = ttk.Entry(
             self, textvariable=self.color1_var, width=7, justify=tk.CENTER)
-        self.color2_entry = tk.Entry(
+        self.color2_entry = ttk.Entry(
             self, textvariable=self.color2_var, width=7, justify=tk.CENTER)
-        self.color3_entry = tk.Entry(
+        self.color3_entry = ttk.Entry(
             self, textvariable=self.color3_var, width=7, justify=tk.CENTER)
 
-        self.algorithm_var = tk.StringVar(self, "IPT")
+        self.algorithm_var = tk.StringVar(self, "HSL")
         self.algorithm_label = ttk.Label(self, text="Algoritmo:")
         mixers = " ".join(color.mixer.keys())
         self.algorithm_combo = ttk.Combobox(
-            self, textvariable=self.algorithm_var, width=5,
+            self, textvariable=self.algorithm_var, width=9,
             values=mixers, justify=tk.CENTER)
         self.algorithm_combo.bind("<<ComboboxSelected>>", self.mix_colors)
 
@@ -587,8 +594,8 @@ class File(ttk.Frame, SelectAfterReturn):
         self.update_history = True
         self.saved = True
 
-        self.height = 630
-        self.width = 630
+        self.height = 500
+        self.width = 500
         self.set_position()
 
         self.create_widgets()
@@ -659,13 +666,13 @@ class File(ttk.Frame, SelectAfterReturn):
             self.canvas.create_oval(x1 , y1 , x2 , y2 ,
                                     outline="black" if outline else hex_val,
                                     fill=hex_val)
-            self.data.insert(hex_val, R, G, B)
+            self.data.insert(hex_val, R, G, B, 1)
         else:
             for i, (hex_val, R, G, B) in enumerate(colors):
                 self.canvas.create_arc(self.position, fill=hex_val,
                                        start=(start - step_2 + i*step), extent=step,
                                        outline="black" if outline else hex_val)
-                self.data.insert(hex_val, R, G, B)
+                self.data.insert(hex_val, R, G, B, i)
 
         self.canvas.create_oval(x1 + 50, y1 + 50, x2 - 50, y2 - 50,
                                 fill=background,
