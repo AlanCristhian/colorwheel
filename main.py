@@ -3,10 +3,23 @@ from tkinter import ttk, filedialog, messagebox, font
 import pathlib
 import configparser
 import itertools
+import sys
 
 import widgets
 import file
 import toolbar
+
+
+
+if sys.platform == "win32":
+    try:
+        import ctypes
+        PROCESS_SYSTEM_DPI_AWARE = 1
+        shcore = ctypes.OleDLL("shcore")
+        shcore.SetProcessDpiAwareness(PROCESS_SYSTEM_DPI_AWARE)
+    except (ImportError, AttributeError, OSError):
+        pass
+
 
 
 COUNTER = itertools.count().__next__
