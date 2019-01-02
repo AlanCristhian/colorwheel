@@ -2,6 +2,7 @@ import tkinter
 import _tkinter
 from tkinter import ttk, messagebox
 import pathlib
+import platform
 
 BASE = pathlib.Path()
 
@@ -151,12 +152,14 @@ class ClosableNotebook(ttk.Notebook):
         notebook_layout = style.layout("TNotebook").copy()
         style.layout("ClosableNotebook", notebook_layout)
 
-        # Copy the configuration of the current theme
-        notebook_cfg = style.configure("TNotebook")
-        style.configure(
-            "ClosableNotebook", **notebook_cfg if notebook_cfg else {})
-        tab_cfg = style.configure("TNotebook.Tab").copy()
-        style.configure("ClosableNotebook.Tab", **tab_cfg)
+
+        if platform.system() != "Windows":
+            # Copy the configuration of the current theme
+            notebook_cfg = style.configure("TNotebook")
+            style.configure(
+                "ClosableNotebook", **notebook_cfg if notebook_cfg else {})
+            tab_cfg = style.configure("TNotebook.Tab").copy()
+            style.configure("ClosableNotebook.Tab", **tab_cfg)
 
         # Copy the map of the current theme
         notebook_map = style.map("TNotebook.Tab").copy()
