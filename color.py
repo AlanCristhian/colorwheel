@@ -1,6 +1,6 @@
 from math import radians, cos, sin, sqrt, radians, pow
+import math
 import colorsys
-
 
 from colormath.color_objects import (LCHuvColor, LCHabColor, HSLColor,
                                      HSVColor, IPTColor, sRGBColor,
@@ -305,64 +305,93 @@ def create_cam02_mixer(cie_string):
     return mix
 
 
-RED = 0
-YELLOW = 82.5
-GREEN = 114.5
-CYAN = 173
-BLUE = 249
-MAGENTA = 304
-d_RY = YELLOW - RED
-d_YG = GREEN - YELLOW
-d_GC = CYAN - GREEN
-d_CB = BLUE - CYAN
-d_BM = MAGENTA - BLUE
-d_M3 = 360 - MAGENTA
-k_r = 0.299
-k_g = 0.587
-k_b = 0.114
+# OSR18a hue angles
+R = 0
+Y = 66
+G = 136
+C = 191
+B = 246
+M = 303
+
+# Delta hue
+d_RY = Y - R
+d_YG = G - Y
+d_GC = C - G
+d_CB = B - C
+d_BM = M - B
+d_MR = 360 - M
 
 
-def hsl1_to_rgb(h, s, l):
+# Luminosity
+R_L = 0.25212576226954675
+Y_L = 0.7200627962473862
+G_L = 0.6479370339778395
+C_L = 0.6486607905138208
+B_L = 0.09072375653598125
+M_L = 0.342849518805528
+
+
+# Slope
+s_RY = (Y_L - R_L)/d_RY
+s_YG = (G_L - Y_L)/d_YG
+s_GC = (C_L - G_L)/d_GC
+s_CB = (B_L - C_L)/d_CB
+s_BM = (M_L - B_L)/d_BM
+s_MR = (R_L - M_L)/d_MR
+
+
+def _hsl1_to_rgb(h, s, l):
     s = s/100
     l = l/100
-    c = (1 - abs(2*l - 1))*s
-    m = l - c/2
-    if RED  <= h <= YELLOW:
+    d = l if l <= 0.5 else (1 - l)
+    while h > 360:
+        h = h - 360
+    if R <= h <= Y:
+        j = l - (-R*s_RY + R_L + h*s_RY - 0.5)*d*s
+        c = (1 - abs(2*j - 1))*s
+        m = j - c/2
         x = c*(1 - abs((h/d_RY)%2 - 1))
         r, g, b = (c + m, x + m, m)
-    elif YELLOW  < h <= GREEN:
-        x = c*(1 - abs(((GREEN - h)/d_YG)%2 - 1))
+    elif Y < h <= G:
+        j = l - (-Y*s_YG + Y_L + h*s_YG - 0.5)*d*s
+        c = (1 - abs(2*j - 1))*s
+        m = j - c/2
+        x = c*(1 - abs(((G - h)/d_YG)%2 - 1))
         r, g, b = (x + m, c + m, m)
-    elif GREEN < h <= CYAN:
-        x = c*(1 - abs(((GREEN - h)/d_GC)%2 - 1))
+    elif G < h <= C:
+        j = l - (-G*s_GC + G_L + h*s_GC - 0.5)*d*s
+        c = (1 - abs(2*j - 1))*s
+        m = j - c/2
+        x = c*(1 - abs(((G - h)/d_GC)%2 - 1))
         r, g, b = (m, c + m, x + m)
-    elif CYAN < h <= BLUE:
-        x = c*(1 - abs(((BLUE - h)/d_CB)%2 - 1))
+    elif C < h <= B:
+        j = l - (-C*s_CB + C_L + h*s_CB - 0.5)*d*s
+        c = (1 - abs(2*j - 1))*s
+        m = j - c/2
+        x = c*(1 - abs(((B - h)/d_CB)%2 - 1))
         r, g, b = (m, x + m, c + m)
-    elif BLUE < h <= MAGENTA:
-        x = c*(1 - abs(((BLUE - h)/d_BM)%2 - 1))
+    elif B < h <= M:
+        j = l - (-B*s_BM + B_L + h*s_BM - 0.5)*d*s
+        c = (1 - abs(2*j - 1))*s
+        m = j - c/2
+        x = c*(1 - abs(((B - h)/d_BM)%2 - 1))
         r, g, b = (x + m, m, c + m)
-    elif MAGENTA < h <= 360:
-        x = c*(1 - abs(((BLUE - h)/d_M3)%2 - 1))
+    elif M < h <= 360:
+        j = l - (-M*s_MR + M_L + h*s_MR - 0.5)*d*s
+        c = (1 - abs(2*j - 1))*s
+        m = j - c/2
+        x = c*(1 - abs(((360 - h)/d_MR)%2 - 1))
         r, g, b = (c + m, m, x + m)
     else:
         r, g, b = (m, m, m)
     return r, g, b
 
 
-def hsl2_to_rgb(h, s, l):
-    l = 100 - l
-    r, g, b = hsl1_to_rgb(h, s, l)
-    l_perceived = (0.299*r**2 + 0.587*g**2 + 0.114*b**2)**0.5
-    l_nivelated = 1 - (l_perceived**6*(l/100)**4)**(1/10)
-    r, g, b = hsl1_to_rgb(h, s, l_nivelated*100)
-    return r, g, b
-
 
 def hsl2(start, amount, saturation, luminosity):
     step = 360/amount
     ans = ((start + i*step, saturation, luminosity) for i in range(amount))
-    ans = (hsl2_to_rgb(h, s, l) for h, s, l in ans)
+    ans = (_hsl1_to_rgb(h, s, l) for h, s, l in ans)
     ans = (_rgb1_to_rgb255(r, g, b) for r, g, b in ans)
     ans = (("#%02x%02x%02x" % (r, g, b), r, g, b) for r, g, b in ans)
     return ans
