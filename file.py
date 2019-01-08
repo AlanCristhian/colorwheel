@@ -62,7 +62,7 @@ class SettingsFrame(ttk.LabelFrame):
 
         # number
         self.number_var = tk.IntVar(self, 360)
-        self.number_var.min, self.number_var.max = 0, 360
+        self.number_var.min, self.number_var.max = 1, 360
         self.number_label = ttk.Label(self, text="Cantidad:")
         self.number_entry = ttk.Entry(
             self, textvariable=self.number_var, width=3, justify=tk.CENTER)
@@ -70,8 +70,8 @@ class SettingsFrame(ttk.LabelFrame):
             self, variable=self.number_var, **SCALE_360)
 
         # start
-        self.start_var = tk.IntVar(self, 0)
-        self.start_var.min, self.start_var.max = 0, 360
+        self.start_var = tk.IntVar(self, 1)
+        self.start_var.min, self.start_var.max = 1, 360
         self.start_label = ttk.Label(self, text="Empezar en:")
         self.start_entry = ttk.Entry(
             self, textvariable=self.start_var, width=3, justify=tk.CENTER)
@@ -80,7 +80,7 @@ class SettingsFrame(ttk.LabelFrame):
 
         # saturation
         self.saturation_var = tk.IntVar(self, 50)
-        self.saturation_var.min, self.saturation_var.max = 0, 100
+        self.saturation_var.min, self.saturation_var.max = 1, 100
         self.saturation_label = ttk.Label(self, text="Saturación:")
         self.saturation_entry = ttk.Entry(
             self, textvariable=self.saturation_var, width=3, justify=tk.CENTER)
@@ -89,7 +89,7 @@ class SettingsFrame(ttk.LabelFrame):
 
         # luminosity
         self.luminosity_var = tk.IntVar(self, 50)
-        self.luminosity_var.min, self.luminosity_var.max = 0, 100
+        self.luminosity_var.min, self.luminosity_var.max = 1, 100
         self.luminosity_label = ttk.Label(self, text="Luminosidad:")
         self.luminosity_entry = ttk.Entry(
             self, textvariable=self.luminosity_var, width=3, justify=tk.CENTER)
